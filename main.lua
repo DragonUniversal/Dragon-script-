@@ -704,7 +704,7 @@ AddToggle(Player, {
     end
 })
 
-AddToggle(Cofig, {
+AddToggle(Config, {
 
     Name = "FPS",
 
@@ -866,7 +866,7 @@ AddToggle(Cofig, {
 
 
 
-AddButton(Cofig, {
+AddButton(Config, {
 
     Name = "FPS Boost",
 
@@ -1041,5 +1041,80 @@ AddToggle(Config, {
 			restoreSeats()
 		end
 	end
+})
+
+-- Serviços
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- Variáveis do Aimbot
+local AimbotEnabled = false
+local AimbotConnection = nil
+local FOVRadius = 100
+
+-- Desenha o círculo de FOV
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Color = Color3.fromRGB(255, 0, 0)
+FOVCircle.Thickness = 2
+FOVCircle.Filled = false
+FOVCircle.Visible = false
+FOVCircle.Radius = FOVRadius
+
+local FOV_OffsetX = 30
+local FOV_OffsetY = 0
+
+-- Atualiza posição do círculo de FOV
+RunService.RenderStepped:Connect(function()
+    local screenSize = Camera.ViewportSize
+    FOVCircle.Position = Vector2.new((screenSize.X / 2) + FOV_OffsetX, (screenSize.Y / 2) + FOV_OffsetY)
+end)
+
+-- Encontra jogador mais próximo dentro do FOV
+local function getClosestPlayerToFOV()
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+
+    for _, otherPlayer in ipairs(Players:GetPlayers()) do
+        if otherPlayer ~= LocalPlayer and otherPlayer.Character then
+            local head = otherPlayer.Character:FindFirstChild("Head")
+            if head then
+                local pos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                if onScreen then
+                    local dist = (Vector2.new(pos.X, pos.Y) - FOVCircle.Position).Magnitude
+                    if dist < FOVCircle.Radius and dist < shortestDistance then
+                        shortestDistance = dist
+                        closestPlayer = otherPlayer
+                    end
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Toggle do Aimbot
+AddToggle(Config, {
+    Name = "Aimbot",
+    Default = false,
+    Callback = function(Value)
+        AimbotEnabled = Value
+        FOVCircle.Visible = Value
+
+        if Value and not AimbotConnection then
+            AimbotConnection = RunService.RenderStepped:Connect(function()
+                local target = getClosestPlayerToFOV()
+                if target and target.Character and target.Character:FindFirstChild("Head") then
+                    local head = target.Character.Head
+                    Camera.CFrame = CFrame.new(Camera.CFrame.Position, head.Position)
+                end
+            end)
+        elseif not Value and AimbotConnection then
+            AimbotConnection:Disconnect()
+            AimbotConnection = nil
+        end
+    end
 })
 
