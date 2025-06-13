@@ -839,82 +839,25 @@ AddToggle(Player, {
 })
 
 
+-- Slider para controlar o tamanho do FOV
 
-local Players = game:GetService("Players")
+AddSlider(Player, {
 
-local StarterGui = game:GetService("StarterGui")
+    Name = "FOV",
 
+    MinValue = 16,
 
+    MaxValue = 250,
 
-local notificacaoAtivada = false
+    Default = FOVRadius,
 
-
-
--- Função para exibir notificações
-
-local function notify(title, text)
-
-    if notificacaoAtivada then
-
-        StarterGui:SetCore("SendNotification", {
-
-            Title = title,
-
-            Text = text,
-
-            Duration = 5
-
-        })
-
-    end
-
-end
-
--- Toggle do Aimbot
-
-AddToggle(Player, {
-
-    Name = "Aimbot",
-
-    Default = false,
+    Increase = 1,
 
     Callback = function(Value)
 
-        AimbotEnabled = Value
+        FOVRadius = Value
 
-        FOVCircle.Visible = Value
-
-
-
-        if Value and not AimbotConnection then
-
-            AimbotConnection = RunService.RenderStepped:Connect(function()
-
-                if ChangeMode then toggleTargetPart() end
-
-                local target = getClosestPlayerToFOV()
-
-                if target and target.Character then
-
-                    local part = target.Character:FindFirstChild(AimbotTargetPart)
-
-                    if part then
-
-                        Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
-
-                    end
-
-                end
-
-            end)
-
-        elseif not Value and AimbotConnection then
-
-            AimbotConnection:Disconnect()
-
-            AimbotConnection = nil
-
-        end
+        FOVCircle.Radius = FOVRadius
 
     end
 
