@@ -1,47 +1,91 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Snxdfer/back-ups-for-libs/refs/heads/main/RedzUI.lua"))()
 
+
+
 -- Cria a janela principal
+
 MakeWindow({
+
     Hub = {
-        Title = "Dragon Menu - Universal",
+
+        Title = "Dragon Menu I Universal - v4",
+
         Animation = "by : Vito0296poq"
+
     },
+
     
+
    Key = {
+
         KeySystem = false, -- Ativa o sistema de Key
+
         Title = "Sistema de Chave",
+
         Description = "Digite a chave correta para continuar.",
+
         KeyLink = "https://seusite.com/chave", -- Link para obter a chave (opcional)
+
         Keys = {"1234", "chave-extra"}, -- Chaves válidas
+
         Notifi = {
+
             Notifications = true,
+
             CorrectKey = "Chave correta! Iniciando script...",
+
             Incorrectkey = "Chave incorreta, tente novamente.",
+
             CopyKeyLink = "Link copiado!"
+
         }
+
     }
+
 })
+
+
 
 -- Botão de minimizar
+
 MinimizeButton({
-    Image = "rbxassetid://1234567890",
+
+    Image = "rbxassetid://137903795082783",
+
     Size = {40, 40},
+
     Color = Color3.fromRGB(10, 10, 10),
+
     Corner = true,
+
     Stroke = false,
+
     StrokeColor = Color3.fromRGB(255, 0, 0)
+
 })
 
+
+
 -- Criação da aba principal
+
 local Main = MakeTab({Name = "Main"})
+
 local Visuais = MakeTab({Name = "Visuals"})
+
 local Player = MakeTab({Name = "Player"})
+
 local Config = MakeTab({Name = "Settings"})
 
+
+
 MakeNotifi({
+
   Title = "Dragon Menu",
-  Text = "carregado com sucesso",
+
+  Text = "Script Loaded Successfully",
+
   Time = 5
+
 })
 
 
