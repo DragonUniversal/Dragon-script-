@@ -1,6 +1,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Snxdfer/back-ups-for-libs/refs/heads/main/RedzUI.lua"))()
 
 
+
 -- Cria a janela principal
 
 MakeWindow({
@@ -88,200 +89,396 @@ MakeNotifi({
 })
 
 
+
+
+
 AddButton(Main, {
+
     Name = "Fly GUI v4",
+
     Callback = function()
+
         print("Botão foi clicado!")
+
         pcall(function()
+
             loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Fly-v4/refs/heads/main/main.lua"))()
+
         end)
+
     end
+
 })
+
+
+
 
 
 -- Noclip
+
 local noclipConnection
 
+
+
 function toggleNoclip(enable)
+
     if enable then
+
         if not noclipConnection then
+
             noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+
                 for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+
                     if part:IsA("BasePart") then
+
                         part.CanCollide = false
+
                     end
+
                 end
+
             end)
+
         end
+
     else
+
         if noclipConnection then
+
             noclipConnection:Disconnect()
+
             noclipConnection = nil
+
         end
+
         for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+
             if part:IsA("BasePart") then
+
                 part.CanCollide = true
+
             end
+
         end
+
     end
+
 end
+
+
 
 -- Toggle para ativar/desativar colisão
+
 AddToggle(Main, {
+
     Name = "Disable Collisions", 
+
     Default = false,
+
     Callback = function(Value)
+
         toggleNoclip(Value)
+
     end
+
 })
+
+
 
 -- Infinite Jump
+
 local jumpConnection
+
 local function toggleInfiniteJump(enable)
+
     if enable then
+
         if not jumpConnection then
+
             jumpConnection = game:GetService("UserInputService").JumpRequest:Connect(function()
+
                 local player = game.Players.LocalPlayer
+
                 local character = player.Character or player.CharacterAdded:Wait()
+
                 local humanoid = character:FindFirstChildOfClass("Humanoid")
+
                 if humanoid then
+
                     humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+
                 end
+
             end)
+
         end
+
     else
+
         if jumpConnection then
+
             jumpConnection:Disconnect()
+
             jumpConnection = nil
+
         end
+
     end
+
 end
+
+
 
 -- Toggle para ativar/desativar pulo infinito
+
 local Toggle = AddToggle(Main, {
+
     Name = "Infinite jumps",
+
     Default = false,
+
     Callback = function(Value)
+
         toggleInfiniteJump(Value)
+
     end
+
 })
+
+
 
 local Players = game:GetService("Players")
+
 local LocalPlayer = Players.LocalPlayer
 
+
+
 local velocidadeAtivada = false
+
 local velocidadeValor = 25 -- valor inicial
 
+
+
 -- Slider de Velocidade
+
 AddSlider(Main, {
+
     Name = "Speed",
+
     MinValue = 16,
+
     MaxValue = 250,
+
     Default = 25,
+
     Increase = 1,
+
     Callback = function(Value)
+
         velocidadeValor = Value
+
         if velocidadeAtivada then
+
             local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
             local humanoid = character:FindFirstChildOfClass("Humanoid")
+
             if humanoid then
+
                 humanoid.WalkSpeed = velocidadeValor
+
             end
+
         end
+
     end
+
 })
+
+
 
 -- Toggle para ativar/desativar a velocidade
+
 AddToggle(Main, {
+
     Name = "Speed",
+
     Default = false,
+
     Callback = function(Value)
+
         velocidadeAtivada = Value
+
         local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
         local humanoid = character:FindFirstChildOfClass("Humanoid")
+
         if humanoid then
+
             humanoid.WalkSpeed = Value and velocidadeValor or 16
+
         end
+
     end
+
 })
+
+
 
 local jumpAtivado = false
+
 local jumpPowerSelecionado = 25
+
 local jumpPowerPadrao = 50  -- Valor padrão do JumpPower do Roblox
 
+
+
 -- Função para aplicar ou restaurar altura do pulo
+
 local function aplicarJumpPower()
+
     local player = game.Players.LocalPlayer
+
     local character = player.Character or player.CharacterAdded:Wait()
+
     local humanoid = character:FindFirstChildOfClass("Humanoid")
+
     if humanoid then
+
         humanoid.UseJumpPower = true
+
         if jumpAtivado then
+
             humanoid.JumpPower = jumpPowerSelecionado
+
         else
+
             humanoid.JumpPower = jumpPowerPadrao
+
         end
+
     end
+
 end
 
+
+
 -- Slider de Altura do Pulo
+
 AddSlider(Main, {
+
     Name = "Super Jump",
+
     MinValue = 10,
+
     MaxValue = 900,
+
     Default = 40,
+
     Increase = 1,
+
     Callback = function(Value)
+
         jumpPowerSelecionado = Value
+
         if jumpAtivado then
+
             aplicarJumpPower()
+
         end
+
     end
+
 })
+
+
 
 -- Toggle para ativar/desativar altura do pulo
+
 AddToggle(Main, {
+
     Name = "Super Jump",
+
     Default = false,
+
     Callback = function(Value)
+
         jumpAtivado = Value
+
         aplicarJumpPower()
+
     end
+
 })
+
+
 
 local gravidadeAtivada = false
+
 local gravidadeSelecionada = 196.2 -- valor padrão
+
 local gravidadePadrao = 196.2
 
+
+
 -- Slider para ajustar a gravidade
+
 AddSlider(Main, {
-    Name = "Gravity"    MinValue = 0,
+
+    Name = "Gravity",
+
+    MinValue = 0,
+
     MaxValue = 500,
+
     Default = 196.2,
+
     Increase = 1,
+
     Callback = function(Value)
+
         gravidadeSelecionada = Value
+
         if gravidadeAtivada then
+
             workspace.Gravity = gravidadeSelecionada
+
         end
+
     end
+
 })
+
+
 
 -- Toggle para ativar/desativar o controle de gravidade
+
 AddToggle(Main, {
+
     Name = "Gravity",
+
     Default = false,
+
     Callback = function(Value)
+
         gravidadeAtivada = Value
+
         if gravidadeAtivada then
+
             workspace.Gravity = gravidadeSelecionada
+
         else
+
             workspace.Gravity = gravidadePadrao
+
         end
+
     end
+
 })
 
-            
+
 
 -- Variáveis de controle
 
@@ -833,162 +1030,316 @@ AddToggle(Visuais, {
 
 
 
-
-
 local fovAtivado = false
+
 local fovValor = 70 -- valor padrão inicial
+
 local fovPadrao = 70 -- valor para restaurar quando desativar
 
+
+
 -- Função para aplicar o FOV
+
 local function aplicarFov()
+
     local camera = workspace.CurrentCamera
+
     if camera then
+
         if fovAtivado then
+
             camera.FieldOfView = fovValor
+
         else
+
             camera.FieldOfView = fovPadrao
+
         end
+
     end
+
 end
+
+
 
 -- Atualiza FOV quando o personagem respawnar
+
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
+
     wait(0.5)
+
     aplicarFov()
+
 end)
 
+
+
 -- Slider para ajustar o FOV
+
 AddSlider(Visuais, {
+
     Name = "Field of view",
+
     MinValue = 16,
+
     MaxValue = 120,
+
     Default = fovValor,
+
     Increase = 1,
+
     Callback = function(Value)
+
         fovValor = Value
+
         aplicarFov()
+
     end
+
 })
+
+
 
 -- Toggle para ativar/desativar o FOV
+
 AddToggle(Visuais, {
+
     Name = "Field of view",
+
     Default = false,
+
     Callback = function(Value)
+
         fovAtivado = Value
+
         aplicarFov()
+
     end
+
 })
+
+
 
 local Players = game:GetService("Players") 
+
 local LocalPlayer = Players.LocalPlayer
+
 local RunService = game:GetService("RunService")
 
+
+
 local playerName = ""
+
 local jogadorSelecionado = nil
+
 local observando = false
+
 local observarConnection = nil
+
 local dropdownRef = nil
 
+
+
 -- Função para encontrar jogador pelo nome digitado (busca parcial)
+
 local function encontrarJogador(nome)
+
 	local lowerName = nome:lower()
+
 	for _, player in pairs(Players:GetPlayers()) do
+
 		if player.Name:lower():sub(1, #lowerName) == lowerName then
+
 			return player
+
 		end
+
 	end
+
 	return nil
+
 end
+
+
 
 -- Caixa de texto para digitar nome do jogador
+
 AddTextBox(Player, {
+
 	Name = "Enter player name",
+
 	Default = "",
+
 	Placeholder = "Nome do jogador aqui...",
+
 	Callback = function(text)
+
 		playerName = text
+
 		jogadorSelecionado = encontrarJogador(playerName)
+
 	end
+
 })
 
+
+
 -- Parar observação
+
 local function pararObservar()
+
 	if observarConnection then
+
 		observarConnection:Disconnect()
+
 		observarConnection = nil
+
 	end
+
 	observando = false
+
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+
 		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+
 	end
+
 	print("Observação desativada.")
+
 end
 
+
+
 -- Iniciar observação
+
 local function iniciarObservar(jogador)
+
 	if not jogador or jogador == LocalPlayer then
+
 		warn("Jogador inválido para observar.")
+
 		return
+
 	end
+
+
 
 	observando = true
 
+
+
 	if not jogador.Character or not jogador.Character:FindFirstChild("Humanoid") then
+
 		warn("Personagem do jogador não está disponível.")
+
 		return
+
 	end
+
+
 
 	workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
+
 	print("Observando " .. jogador.Name)
 
+
+
 	observarConnection = jogador.CharacterAdded:Connect(function()
+
 		wait(1)
+
 		if observando then
+
 			if jogador.Character and jogador.Character:FindFirstChild("Humanoid") then
+
 				workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
+
 				print("Continuando observação após respawn.")
+
 			end
+
 		end
+
 	end)
+
 end
 
+
+
 -- Toggle para observar
+
 AddToggle(Player, {
+
 	Name = "Observe",
+
 	Default = false,
+
 	Callback = function(Value)
+
 		jogadorSelecionado = encontrarJogador(playerName)
+
 		if Value then
+
 			if jogadorSelecionado then
+
 				iniciarObservar(jogadorSelecionado)
+
 			else
+
 				warn("Jogador não encontrado para observar.")
+
 			end
+
 		else
+
 			pararObservar()
+
 		end
+
 	end
+
 })
 
+
+
 -- Botão de teleporte único
+
 AddButton(Player, {
+
 	Name = "Teleport",
+
 	Callback = function()
+
 		local jogador = encontrarJogador(playerName)
+
 		if jogador and jogador.Character and jogador.Character:FindFirstChild("HumanoidRootPart") then
+
 			local localChar = LocalPlayer.Character
+
 			if localChar and localChar:FindFirstChild("HumanoidRootPart") then
+
 				localChar.HumanoidRootPart.CFrame = jogador.Character.HumanoidRootPart.CFrame * CFrame.new(3, 0, 3)
+
 				print("Teletransportado para " .. jogador.Name)
+
 			else
+
 				warn("Seu personagem não está disponível.")
+
 			end
+
 		else
+
 			warn("Jogador inválido ou personagem não carregado.")
+
 		end
+
 	end
+
 })
+
+
+
 
 
 -- Serviços 
@@ -1160,6 +1511,7 @@ AddToggle(Player, {
 })
 
 
+
 -- Slider para controlar o tamanho do FOV
 
 AddSlider(Player, {
@@ -1183,6 +1535,41 @@ AddSlider(Player, {
     end
 
 })
+
+
+
+
+
+local Players = game:GetService("Players")
+
+local StarterGui = game:GetService("StarterGui")
+
+
+
+local notificacaoAtivada = false
+
+
+
+-- Função para exibir notificações
+
+local function notify(title, text)
+
+    if notificacaoAtivada then
+
+        StarterGui:SetCore("SendNotification", {
+
+            Title = title,
+
+            Text = text,
+
+            Duration = 5
+
+        })
+
+    end
+
+end
+
 
 
 -- Notifica quando um jogador entra no jogo
@@ -1220,6 +1607,9 @@ AddToggle(Config, {
     end
 
 })
+
+
+
 
 
 AddToggle(Config, {
@@ -1382,6 +1772,8 @@ AddToggle(Config, {
 
 
 
+
+
 AddButton(Config, {
 
     Name = "FPS Boost",
@@ -1452,110 +1844,218 @@ AddButton(Config, {
 
 
 
+
+
 local Players = game:GetService("Players")
+
+
 
 local LocalPlayer = Players.LocalPlayer
 
+
+
 local RunService = game:GetService("RunService")
 
+
+
 local antiSeatEnabled = false
+
 local seatedConnection = nil
+
 local characterConnection = nil
+
 local seatWatcher = nil
+
 local ignoreSeats = {}
 
+
+
 -- Impede o personagem de sentar
+
 local function preventSitting(character)
+
 	local humanoid = character:WaitForChild("Humanoid", 5)
+
 	if not humanoid then return end
 
+
+
 	if seatedConnection then
+
 		seatedConnection:Disconnect()
+
 	end
+
+
 
 	seatedConnection = humanoid.Seated:Connect(function(isSeated)
+
 		if isSeated and antiSeatEnabled then
+
 			humanoid.Sit = false
+
 		end
+
 	end)
+
+
 
 	if humanoid.Sit then
+
 		humanoid.Sit = false
+
 	end
+
 end
+
+
 
 -- Torna todos os assentos não interativos
+
 local function disableSeatTouch()
+
 	for _, obj in ipairs(workspace:GetDescendants()) do
+
 		if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
+
 			if not ignoreSeats[obj] then
+
 				ignoreSeats[obj] = obj.CanTouch
+
 				obj.CanTouch = false
+
 			end
+
 		end
+
 	end
+
 end
+
+
 
 -- Restaura os assentos
+
 local function restoreSeats()
+
 	for seat, original in pairs(ignoreSeats) do
+
 		if seat and seat:IsDescendantOf(workspace) then
+
 			seat.CanTouch = original
+
 		end
+
 	end
+
 	ignoreSeats = {}
+
 end
+
+
 
 -- Observa novos assentos adicionados
+
 local function watchNewSeats()
+
 	if seatWatcher then seatWatcher:Disconnect() end
+
 	seatWatcher = workspace.DescendantAdded:Connect(function(desc)
+
 		if antiSeatEnabled and (desc:IsA("Seat") or desc:IsA("VehicleSeat")) then
+
 			task.wait(0.1)
+
 			if desc:IsDescendantOf(workspace) then
+
 				ignoreSeats[desc] = desc.CanTouch
+
 				desc.CanTouch = false
+
 			end
+
 		end
+
 	end)
+
 end
 
+
+
 -- Toggle Anti Sit
+
 AddToggle(Config, {
+
 	Name = "Anti Sit",
+
 	Default = false,
+
 	Callback = function(Value)
+
 		antiSeatEnabled = Value
 
+
+
 		if Value then
+
 			if LocalPlayer.Character then
+
 				preventSitting(LocalPlayer.Character)
+
 			end
 
+
+
 			if characterConnection then
+
 				characterConnection:Disconnect()
+
 			end
+
 			characterConnection = LocalPlayer.CharacterAdded:Connect(preventSitting)
 
+
+
 			disableSeatTouch()
+
 			watchNewSeats()
+
 		else
+
 			if seatedConnection then
+
 				seatedConnection:Disconnect()
+
 				seatedConnection = nil
-			end
-			if characterConnection then
-				characterConnection:Disconnect()
-				characterConnection = nil
-			end
-			if seatWatcher then
-				seatWatcher:Disconnect()
-				seatWatcher = nil
+
 			end
 
+			if characterConnection then
+
+				characterConnection:Disconnect()
+
+				characterConnection = nil
+
+			end
+
+			if seatWatcher then
+
+				seatWatcher:Disconnect()
+
+				seatWatcher = nil
+
+			end
+
+
+
 			restoreSeats()
+
 		end
+
 	end
+
 })
+
+
 
 
