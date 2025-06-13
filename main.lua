@@ -390,122 +390,11 @@ AddToggle(Visuais, {
 
             if connections["PlayerAdded"] then
                 connections["PlayerAdded"]:Disconnect()
-                connections["PlayerAdded"] = nil
+                connections["PayerAdded"] = nil
             end
         end
     end
 })
-
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-local camera = workspace.CurrentCamera
-
-local skeletons = {}
-local skeletonConnection = nil
-local playerRemovingConnection = nil
-
-local partsToConnect = {
-    {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"},
-    {"UpperTorso", "LeftUpperArm"}, {"LeftUpperArm", "LeftLowerArm"}, {"LeftLowerArm", "LeftHand"},
-    {"UpperTorso", "RightUpperArm"}, {"RightUpperArm", "RightLowerArm"}, {"RightLowerArm", "RightHand"},
-    {"LowerTorso", "LeftUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"LeftLowerLeg", "LeftFoot"},
-    {"LowerTorso", "RightUpperLeg"}, {"RightUpperLeg", "RightLowerLeg"}, {"RightLowerLeg", "RightFoot"},
-}
-
-local function createSkeleton(player)
-    if skeletons[player] then return end
-    local lines = {}
-    for _ = 1, #partsToConnect do
-        local line = Drawing.new("Line")
-        line.Color = Color3.new(1, 1, 1)
-        line.Thickness = 2
-        line.Transparency = 1
-        line.Visible = false
-        table.insert(lines, line)
-    end
-    skeletons[player] = lines
-end
-
-local function removeSkeleton(player)
-    if skeletons[player] then
-        for _, line in pairs(skeletons[player]) do
-            line.Visible = false
-            line:Remove()
-        end
-        skeletons[player] = nil
-    end
-end
-
--- Toggle ESP Esqueleto funcional
-AddToggle(Visuais, {
-    Name = "ESP Skeleton",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
-                    createSkeleton(player)
-                end
-            end
-
-            skeletonConnection = RunService.RenderStepped:Connect(function()
-                for _, player in pairs(Players:GetPlayers()) do
-                    if player ~= LocalPlayer and player.Character then
-                        if not skeletons[player] then
-                            createSkeleton(player)
-                        end
-
-                        local lines = skeletons[player]
-                        local character = player.Character
-
-                        for i, parts in ipairs(partsToConnect) do
-                            local part0 = character:FindFirstChild(parts[1])
-                            local part1 = character:FindFirstChild(parts[2])
-                            local line = lines[i]
-
-                            if part0 and part1 then
-                                local pos0, onScreen0 = camera:WorldToViewportPoint(part0.Position)
-                                local pos1, onScreen1 = camera:WorldToViewportPoint(part1.Position)
-
-                                if onScreen0 and onScreen1 then
-                                    line.From = Vector2.new(pos0.X, pos0.Y)
-                                    line.To = Vector2.new(pos1.X, pos1.Y)
-                                    line.Visible = true
-                                else
-                                    line.Visible = false
-                                end
-                            else
-                                line.Visible = false
-                            end
-                        end
-                    else
-                        removeSkeleton(player)
-                    end
-                end
-            end)
-
-            playerRemovingConnection = Players.PlayerRemoving:Connect(function(player)
-                removeSkeleton(player)
-            end)
-        else
-            if skeletonConnection then
-                skeletonConnection:Disconnect()
-                skeletonConnection = nil
-            end
-            if playerRemovingConnection then
-                playerRemovingConnection:Disconnect()
-                playerRemovingConnection = nil
-            end
-
-            for player in pairs(skeletons) do
-                removeSkeleton(player)
-            end
-        end
-    end
-})
-
 
 
 -- Variável global para controlar o estado do ESP
@@ -669,6 +558,7 @@ AddToggle(Visuais, {
         end
     end
 })
+
 
 local fovAtivado = false
 local fovValor = 70 -- valor padrão inicial
@@ -1057,7 +947,6 @@ AddToggle(Config, {
 })
 
 
-
 AddToggle(Config, {
 
     Name = "FPS",
@@ -1215,8 +1104,6 @@ AddToggle(Config, {
     end
 
 })
-
-
 
 
 
