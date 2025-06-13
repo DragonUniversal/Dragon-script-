@@ -36,7 +36,7 @@ MinimizeButton({
 local Main = MakeTab({Name = "Main"})
 local Visuais = MakeTab({Name = "Visuals"})
 local Player = MakeTab({Name = "Player"})
-local Config = MakeTab({Name = "Config"})
+local Config = MakeTab({Name = "Settings"})
 
 MakeNotifi({
   Title = "Dragon Menu",
@@ -669,40 +669,295 @@ AddButton(Player, {
 	end
 })
 
+
+-- Serviços 
+
 local Players = game:GetService("Players")
+
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+
+local Camera = workspace.CurrentCamera
+
+
+
+-- Variáveis do Aimbot
+
+local AimbotEnabled = false
+
+local AimbotConnection = nil
+
+local FOVRadius = 100
+
+local AimbotTargetPart = "Head" -- Padrão
+
+local ChangeMode = false
+
+
+
+-- Desenha o círculo de FOV
+
+local FOVCircle = Drawing.new("Circle")
+
+FOVCircle.Color = Color3.fromRGB(255, 0, 0)
+
+FOVCircle.Thickness = 2
+
+FOVCircle.Filled = false
+
+FOVCircle.Visible = false
+
+FOVCircle.Radius = FOVRadius
+
+
+
+local FOV_OffsetX = 30
+
+local FOV_OffsetY = 0
+
+
+
+-- Atualiza posição do círculo de FOV
+
+RunService.RenderStepped:Connect(function()
+
+    local screenSize = Camera.ViewportSize
+
+    FOVCircle.Position = Vector2.new((screenSize.X / 2) + FOV_OffsetX, (screenSize.Y / 2) + FOV_OffsetY)
+
+end)
+
+
+
+-- Alterna automaticamente entre Head e Neck
+
+local function toggleTargetPart()
+
+    AimbotTargetPart = (AimbotTargetPart == "Head") and "Neck" or "Head"
+
+end
+
+
+
+-- Encontra jogador mais próximo dentro do FOV
+
+local function getClosestPlayerToFOV()
+
+    local closestPlayer = nil
+
+    local shortestDistance = math.huge
+
+
+
+    for _, otherPlayer in ipairs(Players:GetPlayers()) do
+
+        if otherPlayer ~= LocalPlayer and otherPlayer.Character then
+
+            local part = otherPlayer.Character:FindFirstChild(AimbotTargetPart)
+
+            if part then
+
+                local pos, onScreen = Camera:WorldToViewportPoint(part.Position)
+
+                if onScreen then
+
+                    local dist = (Vector2.new(pos.X, pos.Y) - FOVCircle.Position).Magnitude
+
+                    if dist < FOVCircle.Radius and dist < shortestDistance then
+
+                        shortestDistance = dist
+
+                        closestPlayer = otherPlayer
+
+                    end
+
+                end
+
+            end
+
+        end
+
+    end
+
+
+
+    return closestPlayer
+
+end
+
+
+
+-- Toggle do Aimbot
+
+AddToggle(Player, {
+
+    Name = "Aimbot",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        AimbotEnabled = Value
+
+        FOVCircle.Visible = Value
+
+
+
+        if Value and not AimbotConnection then
+
+            AimbotConnection = RunService.RenderStepped:Connect(function()
+
+                if ChangeMode then toggleTargetPart() end
+
+                local target = getClosestPlayerToFOV()
+
+                if target and target.Character then
+
+                    local part = target.Character:FindFirstChild(AimbotTargetPart)
+
+                    if part then
+
+                        Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
+
+                    end
+
+                end
+
+            end)
+
+        elseif not Value and AimbotConnection then
+
+            AimbotConnection:Disconnect()
+
+            AimbotConnection = nil
+
+        end
+
+    end
+
+})
+
+
+
+local Players = game:GetService("Players")
+
 local StarterGui = game:GetService("StarterGui")
+
+
 
 local notificacaoAtivada = false
 
+
+
 -- Função para exibir notificações
+
 local function notify(title, text)
+
     if notificacaoAtivada then
+
         StarterGui:SetCore("SendNotification", {
+
             Title = title,
+
             Text = text,
+
             Duration = 5
+
         })
+
     end
+
 end
 
+-- Toggle do Aimbot
+
+AddToggle(Player, {
+
+    Name = "Aimbot",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        AimbotEnabled = Value
+
+        FOVCircle.Visible = Value
+
+
+
+        if Value and not AimbotConnection then
+
+            AimbotConnection = RunService.RenderStepped:Connect(function()
+
+                if ChangeMode then toggleTargetPart() end
+
+                local target = getClosestPlayerToFOV()
+
+                if target and target.Character then
+
+                    local part = target.Character:FindFirstChild(AimbotTargetPart)
+
+                    if part then
+
+                        Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
+
+                    end
+
+                end
+
+            end)
+
+        elseif not Value and AimbotConnection then
+
+            AimbotConnection:Disconnect()
+
+            AimbotConnection = nil
+
+        end
+
+    end
+
+})
+
+
 -- Notifica quando um jogador entra no jogo
+
 Players.PlayerAdded:Connect(function(player)
+
     notify(player.Name, "entered the game,")
+
 end)
+
+
 
 -- Notifica quando um jogador sai do jogo
+
 Players.PlayerRemoving:Connect(function(player)
+
     notify(player.Name, "left the game.")
+
 end)
 
+
+
 -- Toggle para ativar/desativar notificações (sem aviso ao ativar)
-AddToggle(Player, {
+
+AddToggle(Config, {
+
     Name = "Player Notifications",
+
     Default = false,
+
     Callback = function(Value)
+
         notificacaoAtivada = Value
+
     end
+
 })
+
+
 
 AddToggle(Config, {
 
@@ -937,6 +1192,7 @@ AddButton(Config, {
 
 
 
+
 local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
@@ -1041,80 +1297,5 @@ AddToggle(Config, {
 			restoreSeats()
 		end
 	end
-})
-
--- Serviços
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
-
--- Variáveis do Aimbot
-local AimbotEnabled = false
-local AimbotConnection = nil
-local FOVRadius = 100
-
--- Desenha o círculo de FOV
-local FOVCircle = Drawing.new("Circle")
-FOVCircle.Color = Color3.fromRGB(255, 0, 0)
-FOVCircle.Thickness = 2
-FOVCircle.Filled = false
-FOVCircle.Visible = false
-FOVCircle.Radius = FOVRadius
-
-local FOV_OffsetX = 30
-local FOV_OffsetY = 0
-
--- Atualiza posição do círculo de FOV
-RunService.RenderStepped:Connect(function()
-    local screenSize = Camera.ViewportSize
-    FOVCircle.Position = Vector2.new((screenSize.X / 2) + FOV_OffsetX, (screenSize.Y / 2) + FOV_OffsetY)
-end)
-
--- Encontra jogador mais próximo dentro do FOV
-local function getClosestPlayerToFOV()
-    local closestPlayer = nil
-    local shortestDistance = math.huge
-
-    for _, otherPlayer in ipairs(Players:GetPlayers()) do
-        if otherPlayer ~= LocalPlayer and otherPlayer.Character then
-            local head = otherPlayer.Character:FindFirstChild("Head")
-            if head then
-                local pos, onScreen = Camera:WorldToViewportPoint(head.Position)
-                if onScreen then
-                    local dist = (Vector2.new(pos.X, pos.Y) - FOVCircle.Position).Magnitude
-                    if dist < FOVCircle.Radius and dist < shortestDistance then
-                        shortestDistance = dist
-                        closestPlayer = otherPlayer
-                    end
-                end
-            end
-        end
-    end
-
-    return closestPlayer
-end
-
--- Toggle do Aimbot
-AddToggle(Config, {
-    Name = "Aimbot",
-    Default = false,
-    Callback = function(Value)
-        AimbotEnabled = Value
-        FOVCircle.Visible = Value
-
-        if Value and not AimbotConnection then
-            AimbotConnection = RunService.RenderStepped:Connect(function()
-                local target = getClosestPlayerToFOV()
-                if target and target.Character and target.Character:FindFirstChild("Head") then
-                    local head = target.Character.Head
-                    Camera.CFrame = CFrame.new(Camera.CFrame.Position, head.Position)
-                end
-            end)
-        elseif not Value and AimbotConnection then
-            AimbotConnection:Disconnect()
-            AimbotConnection = nil
-        end
-    end
 })
 
