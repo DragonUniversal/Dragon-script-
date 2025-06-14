@@ -107,12 +107,12 @@ AddButton(Script, {
         pcall(function()
 
             loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-Magnata-/refs/heads/main/Script.lua"))()
-
         end)
 
     end
 
 })
+
 
 
 
