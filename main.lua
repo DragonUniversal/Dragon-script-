@@ -96,7 +96,7 @@ MakeNotifi({
 
 
 
-AddButton(Main, {
+AddButton(Script, {
 
     Name = "Magnata Da Guerra",
 
