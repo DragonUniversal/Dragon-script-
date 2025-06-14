@@ -68,6 +68,8 @@ MinimizeButton({
 
 -- Criação da aba principal
 
+local Script = MakeTab({Name = "Script"})
+
 local Main = MakeTab({Name = "Main"})
 
 local Visuais = MakeTab({Name = "Visuals"})
@@ -78,6 +80,8 @@ local Config = MakeTab({Name = "Settings"})
 
 
 
+
+
 MakeNotifi({
 
   Title = "Dragon Menu",
@@ -85,6 +89,28 @@ MakeNotifi({
   Text = "Script Loaded Successfully",
 
   Time = 5
+
+})
+
+
+
+
+
+AddButton(Main, {
+
+    Name = "Magnata Da Guerra",
+
+    Callback = function()
+
+        print("Botão foi clicado!")
+
+        pcall(function()
+
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-Magnata-/refs/heads/main/Script.lua"))()
+
+        end)
+
+    end
 
 })
 
@@ -117,7 +143,6 @@ AddButton(Main, {
 -- Noclip
 
 local noclipConnection
-
 
 
 function toggleNoclip(enable)
