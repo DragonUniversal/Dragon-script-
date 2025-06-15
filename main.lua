@@ -68,8 +68,6 @@ MinimizeButton({
 
 -- Criação da aba principal
 
-local Script = MakeTab({Name = "Script"})
-
 local Main = MakeTab({Name = "Main"})
 
 local Visuais = MakeTab({Name = "Visuals"})
@@ -91,29 +89,6 @@ MakeNotifi({
   Time = 5
 
 })
-
-
-
-
-
-AddButton(Script, {
-
-    Name = "Magnata Da Guerra",
-
-    Callback = function()
-
-        print("Botão foi clicado!")
-
-        pcall(function()
-
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-Magnata-/refs/heads/main/Script.lua"))()
-        end)
-
-    end
-
-})
-
-
 
 
 
@@ -1667,6 +1642,167 @@ AddButton(Config, {
 
 })
 
+
+
+local Lighting = game:GetService("Lighting")
+
+
+
+-- Armazena configurações originais
+
+local originalSettings = {
+
+	Brightness = Lighting.Brightness,
+
+	Ambient = Lighting.Ambient,
+
+	OutdoorAmbient = Lighting.OutdoorAmbient,
+
+	ClockTime = Lighting.ClockTime,
+
+	FogEnd = Lighting.FogEnd,
+
+	GlobalShadows = Lighting.GlobalShadows
+
+}
+
+
+
+local fullBrightEnabled = false
+
+local connections = {}
+
+
+
+-- Ativa o FullBright com céu fixo
+
+local function enableFullBright()
+
+	fullBrightEnabled = true
+
+
+
+	Lighting.Brightness = 2
+
+	Lighting.Ambient = Color3.new(1, 1, 1)
+
+	Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+
+	Lighting.ClockTime = 12
+
+	Lighting.FogEnd = 1e10
+
+	Lighting.GlobalShadows = false
+
+
+
+	-- Bloqueia alterações feitas pelo jogo
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+
+		if fullBrightEnabled then Lighting.ClockTime = 12 end
+
+	end))
+
+
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
+
+		if fullBrightEnabled then Lighting.Ambient = Color3.new(1, 1, 1) end
+
+	end))
+
+
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("OutdoorAmbient"):Connect(function()
+
+		if fullBrightEnabled then Lighting.OutdoorAmbient = Color3.new(1, 1, 1) end
+
+	end))
+
+
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("GlobalShadows"):Connect(function()
+
+		if fullBrightEnabled then Lighting.GlobalShadows = false end
+
+	end))
+
+
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("FogEnd"):Connect(function()
+
+		if fullBrightEnabled then Lighting.FogEnd = 1e10 end
+
+	end))
+
+
+
+	print("Lighting ativado.")
+
+end
+
+
+
+-- Restaura os valores originais
+
+local function disableFullBright()
+
+	fullBrightEnabled = false
+
+
+
+	for _, conn in ipairs(connections) do
+
+		if conn.Disconnect then
+
+			conn:Disconnect()
+
+		end
+
+	end
+
+	connections = {}
+
+
+
+	for prop, value in pairs(originalSettings) do
+
+		Lighting[prop] = value
+
+	end
+
+
+
+	print("Lighting desativado.")
+
+end
+
+
+
+-- Toggle de Fixed Day
+
+AddToggle(Config, {
+
+	Name = "Lighting (Fixed Day)",
+
+	Default = false,
+
+	Callback = function(state)
+
+		if state then
+
+			enableFullBright()
+
+		else
+
+			disableFullBright()
+
+		end
+
+	end
+
+})
 
 
 
