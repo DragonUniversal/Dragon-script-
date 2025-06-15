@@ -453,7 +453,6 @@ AddSlider(Main, {
 
 
 -- Toggle para ativar/desativar o controle de gravidade
-
 AddToggle(Main, {
 
     Name = "Gravity",
@@ -480,9 +479,15 @@ AddToggle(Main, {
 
 
 
--- Variáveis de controle
+-- Variáveis de controle 
+
+
 
 local espAtivado = false
+
+
+
+local espColor = Color3.fromRGB(255, 255, 255) -- cor padrão
 
 local connections = {}
 
@@ -526,9 +531,9 @@ local function criarESP(player)
 
                     esp.Adornee = head
 
-                    esp.Size = UDim2.new(0, 70, 0, 18) -- menor tamanho
+                    esp.Size = UDim2.new(0, 70, 0, 18)
 
-                    esp.StudsOffset = Vector3.new(0, 1.3, 0) -- mais próximo da cabeça
+                    esp.StudsOffset = Vector3.new(0, 1.3, 0)
 
                     esp.AlwaysOnTop = true
 
@@ -542,9 +547,9 @@ local function criarESP(player)
 
                     text.BackgroundTransparency = 1
 
-                    text.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    text.TextColor3 = espColor -- COR ESCOLHIDA AQUI
 
-                    text.TextSize = 10 -- menor texto
+                    text.TextSize = 10
 
                     text.TextScaled = false
 
@@ -579,6 +584,8 @@ local function criarESP(player)
                     local distancia = (LocalPlayer.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
 
                     texto.Text = player.Name .. " - " .. math.floor(distancia) .. "m"
+
+                    texto.TextColor3 = espColor
 
                 end
 
@@ -626,7 +633,7 @@ end
 
 
 
--- Toggle para ativar/desativar o ESP
+-- Toggle ESP
 
 AddToggle(Visuais, {
 
@@ -708,73 +715,51 @@ AddToggle(Visuais, {
 
 
 
--- Variável global para controlar o estado do ESP
+-- Color Picker para mudar a cor
 
-local espAtivado = false
+AddColorPicker(Visuais, {
 
+    Name = "Color of the ESP",
 
+    Default = espColor,
 
--- Serviços necessários
+    Callback = function(Value)
 
-local Players = game:GetService("Players")
-
-local RunService = game:GetService("RunService")
-
-local LocalPlayer = Players.LocalPlayer
+        espColor = Value
 
 
 
--- Função para aplicar o Highlight
+        -- Atualiza todos os ESPs ativos
 
-local function aplicarHighlight(player)
+        for _, player in ipairs(Players:GetPlayers()) do
 
-    if player == LocalPlayer then return end
+            if player ~= LocalPlayer then
 
-    local character = player.Character
+                local char = player.Character
 
-    if character and not character:FindFirstChild("ESPHighlight") then
+                local head = char and char:FindFirstChild("Head")
 
-        local highlight = Instance.new("Highlight")
+                if head then
 
-        highlight.Name = "ESPHighlight"
+                    local esp = head:FindFirstChild("ESP")
 
-        highlight.Adornee = character
+                    local texto = esp and esp:FindFirstChild("Texto")
 
-        highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Cor branca
+                    if texto then
 
-        highlight.FillTransparency = 1 -- Centro totalmente transparente
+                        texto.TextColor3 = espColor
 
-        highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Cor branca
+                    end
 
-        highlight.OutlineTransparency = 0 -- Contorno totalmente opaco
+                end
 
-        highlight.Parent = character
-
-    end
-
-end
-
-
-
--- Função para remover o Highlight
-
-local function removerHighlight(player)
-
-    local character = player.Character
-
-    if character then
-
-        local highlight = character:FindFirstChild("ESPHighlight")
-
-        if highlight then
-
-            highlight:Destroy()
+            end
 
         end
 
     end
 
-end
+})
 
 
 
