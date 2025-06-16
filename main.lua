@@ -1624,7 +1624,6 @@ AddToggle(Config, {
                 local existingGui = playerGui:FindFirstChild("FPSCounter")
 
                 if existingGui then
-
                     existingGui:Destroy()
 
                 end
@@ -1650,448 +1649,228 @@ AddToggle(Config, {
 
 
 
-
 AddButton(Config, {
-
     Name = "FPS Boost",
-
     Callback = function()
-
         print("Botão foi clicado!")
 
-
-
         pcall(function()
-
             -- Otimiza todas as partes para reduzir o impacto gráfico
-
             for _, v in ipairs(workspace:GetDescendants()) do
-
                 if v:IsA("Part") or v:IsA("MeshPart") or v:IsA("UnionOperation") then
-
                     v.Material = Enum.Material.SmoothPlastic -- Remove texturas complexas
-
                     v.Reflectance = 0 -- Remove reflexos
-
                     v.CastShadow = false -- Desativa sombras
-
                 elseif v:IsA("Decal") or v:IsA("Texture") then
-
                     v.Transparency = 1 -- Oculta texturas e decals
-
                 elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Explosion") then
-
                     v:Destroy() -- Remove efeitos que consomem desempenho
-
                 end
-
             end
 
-
-
             -- Ajusta configurações para melhorar o FPS
-
             pcall(function()
-
                 settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 -- Reduz qualidade gráfica
-
                 workspace.GlobalShadows = false -- Remove sombras globais
 
-
                 if game:FindFirstChild("Lighting") then
-
                     local lighting = game.Lighting
-
                     lighting.FogEnd = 1e10 -- Remove neblina
-
                     lighting.GlobalShadows = false
-
                     lighting.Brightness = 2
-
                 end
-
             end)
-
         end)
-
     end
-
 })
+
 
 
 local Lighting = game:GetService("Lighting") 
 
-
-
 -- Armazena configurações originais
-
 local originalSettings = {
-
 	Brightness = Lighting.Brightness,
-
 	Ambient = Lighting.Ambient,
-
 	OutdoorAmbient = Lighting.OutdoorAmbient,
-
 	ClockTime = Lighting.ClockTime,
-
 	FogEnd = Lighting.FogEnd,
-
 	GlobalShadows = Lighting.GlobalShadows
-
 }
 
-
-
 local fullBrightEnabled = false
-
 local connections = {}
 
-
-
 -- Ativa o modo com pouco brilho
-
 local function enableFullBright()
-
 	fullBrightEnabled = true
 
-
-
 	Lighting.Brightness = 0.5
-
 	Lighting.Ambient = Color3.new(0.3, 0.3, 0.3)
-
 	Lighting.OutdoorAmbient = Color3.new(0.4, 0.4, 0.4)
-
 	Lighting.ClockTime = 12
-
 	Lighting.FogEnd = 1e10
-
 	Lighting.GlobalShadows = false
 
-
-
 	-- Bloqueia alterações feitas pelo jogo
-
 	table.insert(connections, Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
-
 		if fullBrightEnabled then Lighting.ClockTime = 12 end
-
 	end))
-
-
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
-
 		if fullBrightEnabled then Lighting.Ambient = Color3.new(0.3, 0.3, 0.3) end
-
 	end))
-
-
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("OutdoorAmbient"):Connect(function()
-
 		if fullBrightEnabled then Lighting.OutdoorAmbient = Color3.new(0.4, 0.4, 0.4) end
-
 	end))
-
-
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("GlobalShadows"):Connect(function()
-
 		if fullBrightEnabled then Lighting.GlobalShadows = false end
-
 	end))
-
-
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("FogEnd"):Connect(function()
-
 		if fullBrightEnabled then Lighting.FogEnd = 1e10 end
-
 	end))
 
-
-
 	print("Lighting com pouco brilho ativado.")
-
 end
-
-
 
 -- Restaura os valores originais
-
 local function disableFullBright()
-
 	fullBrightEnabled = false
 
-
-
 	for _, conn in ipairs(connections) do
-
 		if conn.Disconnect then
-
 			conn:Disconnect()
-
 		end
-
 	end
-
 	connections = {}
 
-
-
 	for prop, value in pairs(originalSettings) do
-
 		Lighting[prop] = value
-
 	end
-
-
 
 	print("Lighting desativado.")
-
 end
 
-
-
 -- Toggle de iluminação
-
 AddToggle(Config, {
-
 	Name = "Lighting",
-
 	Default = false,
-
 	Callback = function(state) 
-
 		if state then
-
 			enableFullBright() 
-
 		else
-
 			disableFullBright()
-
 		end
-
 	end
-
-})	
-
+})
 
 
 
 local Players = game:GetService("Players")
 
-
-
 local LocalPlayer = Players.LocalPlayer
-
-
 
 local RunService = game:GetService("RunService")
 
-
-
-local aniSeatEnabled = false
-
+local antiSeatEnabled = false
 local seatedConnection = nil
-
 local characterConnection = nil
-
 local seatWatcher = nil
-
 local ignoreSeats = {}
 
-
-
 -- Impede o personagem de sentar
-
 local function preventSitting(character)
-
 	local humanoid = character:WaitForChild("Humanoid", 5)
-
 	if not humanoid then return end
 
-
-
 	if seatedConnection then
-
 		seatedConnection:Disconnect()
-
 	end
-
-
 
 	seatedConnection = humanoid.Seated:Connect(function(isSeated)
-
 		if isSeated and antiSeatEnabled then
-
 			humanoid.Sit = false
-
 		end
-
 	end)
-
-
 
 	if humanoid.Sit then
-
 		humanoid.Sit = false
-
 	end
-
 end
-
-
 
 -- Torna todos os assentos não interativos
-
 local function disableSeatTouch()
-
 	for _, obj in ipairs(workspace:GetDescendants()) do
-
 		if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
-
 			if not ignoreSeats[obj] then
-
 				ignoreSeats[obj] = obj.CanTouch
-
 				obj.CanTouch = false
-
 			end
-
 		end
-
 	end
-
 end
-
-
 
 -- Restaura os assentos
-
 local function restoreSeats()
-
 	for seat, original in pairs(ignoreSeats) do
-
 		if seat and seat:IsDescendantOf(workspace) then
-
 			seat.CanTouch = original
-
 		end
-
 	end
-
 	ignoreSeats = {}
-
 end
-
-
 
 -- Observa novos assentos adicionados
-
 local function watchNewSeats()
-
 	if seatWatcher then seatWatcher:Disconnect() end
-
 	seatWatcher = workspace.DescendantAdded:Connect(function(desc)
-
 		if antiSeatEnabled and (desc:IsA("Seat") or desc:IsA("VehicleSeat")) then
-
 			task.wait(0.1)
-
 			if desc:IsDescendantOf(workspace) then
-
 				ignoreSeats[desc] = desc.CanTouch
-
 				desc.CanTouch = false
-
 			end
-
 		end
-
 	end)
-
 end
 
-
-
 -- Toggle Anti Sit
-
 AddToggle(Config, {
-
 	Name = "Anti Sit",
-
 	Default = false,
-
 	Callback = function(Value)
-
 		antiSeatEnabled = Value
 
-
-
 		if Value then
-
 			if LocalPlayer.Character then
-
 				preventSitting(LocalPlayer.Character)
-
 			end
-
-
 
 			if characterConnection then
-
 				characterConnection:Disconnect()
-
 			end
-
 			characterConnection = LocalPlayer.CharacterAdded:Connect(preventSitting)
 
-
-
 			disableSeatTouch()
-
 			watchNewSeats()
-
 		else
-
 			if seatedConnection then
-
 				seatedConnection:Disconnect()
-
 				seatedConnection = nil
-
 			end
-
 			if characterConnection then
-
 				characterConnection:Disconnect()
-
 				characterConnection = nil
-
 			end
-
 			if seatWatcher then
-
 				seatWatcher:Disconnect()
-
 				seatWatcher = nil
-
 			end
-
-
 
 			restoreSeats()
-
 		end
-
 	end
-
 })
-
-
-
-
