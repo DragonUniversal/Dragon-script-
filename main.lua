@@ -1698,7 +1698,6 @@ AddButton(Config, {
                 workspace.GlobalShadows = false -- Remove sombras globais
 
 
-
                 if game:FindFirstChild("Lighting") then
 
                     local lighting = game.Lighting
@@ -1720,12 +1719,7 @@ AddButton(Config, {
 })
 
 
-
-
-
-
-
-local Lighting = game:GetService("Lighting")
+local Lighting = game:GetService("Lighting") 
 
 
 
@@ -1755,7 +1749,7 @@ local connections = {}
 
 
 
--- Ativa o FullBright com céu fixo
+-- Ativa o modo com pouco brilho
 
 local function enableFullBright()
 
@@ -1763,11 +1757,11 @@ local function enableFullBright()
 
 
 
-	Lighting.Brightness = 2
+	Lighting.Brightness = 0.5
 
-	Lighting.Ambient = Color3.new(1, 1, 1)
+	Lighting.Ambient = Color3.new(0.3, 0.3, 0.3)
 
-	Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+	Lighting.OutdoorAmbient = Color3.new(0.4, 0.4, 0.4)
 
 	Lighting.ClockTime = 12
 
@@ -1789,7 +1783,7 @@ local function enableFullBright()
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
 
-		if fullBrightEnabled then Lighting.Ambient = Color3.new(1, 1, 1) end
+		if fullBrightEnabled then Lighting.Ambient = Color3.new(0.3, 0.3, 0.3) end
 
 	end))
 
@@ -1797,7 +1791,7 @@ local function enableFullBright()
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("OutdoorAmbient"):Connect(function()
 
-		if fullBrightEnabled then Lighting.OutdoorAmbient = Color3.new(1, 1, 1) end
+		if fullBrightEnabled then Lighting.OutdoorAmbient = Color3.new(0.4, 0.4, 0.4) end
 
 	end))
 
@@ -1819,7 +1813,7 @@ local function enableFullBright()
 
 
 
-	print("Lighting ativado.")
+	print("Lighting com pouco brilho ativado.")
 
 end
 
@@ -1861,19 +1855,19 @@ end
 
 
 
--- Toggle de Fixed Day
+-- Toggle de iluminação
 
 AddToggle(Config, {
 
-	Name = "Lighting (Fixed Day)",
+	Name = "Lighting",
 
 	Default = false,
 
-	Callback = function(state)
+	Callback = function(state) 
 
 		if state then
 
-			enableFullBright()
+			enableFullBright() 
 
 		else
 
@@ -1883,10 +1877,7 @@ AddToggle(Config, {
 
 	end
 
-})
-
-
-
+})	
 
 
 
@@ -1903,7 +1894,7 @@ local RunService = game:GetService("RunService")
 
 
 
-local antiSeatEnabled = false
+local aniSeatEnabled = false
 
 local seatedConnection = nil
 
