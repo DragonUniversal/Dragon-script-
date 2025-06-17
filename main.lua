@@ -1771,6 +1771,79 @@ AddToggle(Config, {
 
 
 
+--// Botão Manual - Anti AFK
+
+
+
+AddButton(Servidor, {
+
+	Name = "Anti AFK",
+
+	Callback = function()
+
+
+
+		-- Verifica se já está ativado para evitar múltiplas conexões
+
+		if getgenv().VitorAntiAFK_Enabled then
+
+			game:GetService("StarterGui"):SetCore("SendNotification", {
+
+				Title = "AntiAFK",
+
+				Text = "Já está ativo!",
+
+				Duration = 3
+
+			})
+
+			return
+
+		end
+
+
+
+		getgenv().VitorAntiAFK_Enabled = true
+
+
+
+		-- Código Anti-AFK
+
+		local VirtualUser = game:GetService('VirtualUser')
+
+
+
+		game:GetService('Players').LocalPlayer.Idled:Connect(function()
+
+			VirtualUser:CaptureController()
+
+			VirtualUser:ClickButton2(Vector2.new())
+
+		end)
+
+
+
+		-- Notificação
+
+		game:GetService("StarterGui"):SetCore("SendNotification", {
+
+			Title = "AntiAFK",
+
+			Text = "Made By vitor",
+
+			Button1 = "Obrigado",
+
+			Duration = 5
+
+		})
+
+	end
+
+})
+
+
+
+
 local Players = game:GetService("Players")
 
 
