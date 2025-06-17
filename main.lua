@@ -1773,8 +1773,6 @@ AddToggle(Config, {
 
 --// Botão Manual - Anti AFK
 
-
-
 AddButton(Servidor, {
 
 	Name = "Anti AFK",
@@ -1789,9 +1787,9 @@ AddButton(Servidor, {
 
 			game:GetService("StarterGui"):SetCore("SendNotification", {
 
-				Title = "AntiAFK",
+				Title = "Anti Afk",
 
-				Text = "Já está ativo!",
+				Text = "is already activating!",
 
 				Duration = 3
 
@@ -1831,7 +1829,7 @@ AddButton(Servidor, {
 
 			Text = "Made By vitor",
 
-			Button1 = "Obrigado",
+			Button1 = "OK",
 
 			Duration = 5
 
@@ -1840,6 +1838,7 @@ AddButton(Servidor, {
 	end
 
 })
+
 
 
 
@@ -2112,7 +2111,7 @@ end
 
 getgenv().ED_AntiKick = {
 
-	Enabled = false, -- Inicia DESATIVADO
+	Enabled = then, 
 
 	SendNotifications = true,
 
