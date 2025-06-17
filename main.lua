@@ -1874,3 +1874,112 @@ AddToggle(Config, {
 		end
 	end
 })
+
+
+--// Cache
+local getgenv, getnamecallmethod, hookmetamethod, hookfunction, newcclosure, checkcaller, lower, gsub, match =
+	getgenv, getnamecallmethod, hookmetamethod, hookfunction, newcclosure, checkcaller, string.lower, string.gsub, string.match
+
+--// Loaded check
+if getgenv().ED_AntiKick then return end
+
+--// Variables
+local cloneref = cloneref or function(...) return ... end
+local clonefunction = clonefunction or function(...) return ... end
+
+local Players = cloneref(game:GetService("Players"))
+local LocalPlayer = cloneref(Players.LocalPlayer)
+local StarterGui = cloneref(game:GetService("StarterGui"))
+
+local SetCore = clonefunction(StarterGui.SetCore)
+local FindFirstChild = clonefunction(game.FindFirstChild)
+
+local CompareInstances = CompareInstances or function(i1, i2)
+	return typeof(i1) == "Instance" and typeof(i2) == "Instance"
+end
+
+local CanCastToSTDString = function(...)
+	return pcall(FindFirstChild, game, ...)
+end
+
+--// Global State
+getgenv().ED_AntiKick = {
+	Enabled = true,
+	SendNotifications = true,
+	CheckCaller = true
+}
+
+--// Main Hook
+local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+	local self, message = ...
+	local method = getnamecallmethod()
+
+	if ((ED_AntiKick.CheckCaller and not checkcaller()) or true)
+		and CompareInstances(self, LocalPlayer)
+		and gsub(method, "^%l", string.upper) == "Kick"
+		and ED_AntiKick.Enabled then
+
+		if CanCastToSTDString(message) then
+			if ED_AntiKick.SendNotifications then
+				SetCore(StarterGui, "SendNotification", {
+					Title = "Vitor Developer - Anti-Kick",
+					Text = "Blocked a Kick attempt!",
+					Icon = "rbxassetid://137903795082783",
+					Duration = 2
+				})
+			end
+			return
+		end
+	end
+
+	return OldNamecall(...)
+end))
+
+local OldFunction; OldFunction = hookfunction(LocalPlayer.Kick, newcclosure(function(self, message)
+	if ((ED_AntiKick.CheckCaller and not checkcaller()) or true)
+		and CompareInstances(self, LocalPlayer)
+		and ED_AntiKick.Enabled then
+
+		if CanCastToSTDString(message) then
+			if ED_AntiKick.SendNotifications then
+				SetCore(StarterGui, "SendNotification", {
+					Title = "Vitor Developer - Anti-Kick",
+					Text = "Blocked a Kick attempt!",
+					Icon = "rbxassetid://137903795082783",
+					Duration = 2
+				})
+			end
+			return
+		end
+	end
+	return OldFunction(self, message)
+end))
+
+-- Startup Notification
+if ED_AntiKick.SendNotifications then
+	SetCore(StarterGui, "SendNotification", {
+		Title = "Vitor Developer - Anti-Kick",
+		Text = "Anti-Kick ativo com sucesso.",
+		Icon = "rbxassetid://137903795082783",
+		Duration = 3
+	})
+end
+
+--// UI: Toggle Anti-Kick
+AddToggle(Config, {
+	Name = "Anti Kick",
+	Default = true,
+	Callback = function(Value)
+		ED_AntiKick.Enabled = Value
+
+		if ED_AntiKick.SendNotifications then
+			SetCore(StarterGui, "SendNotification", {
+				Title = "Vitor Developer - Anti-Kick",
+				Text = "Anti-Kick " .. (Value and "Ativado" or "Desativado"),
+				Icon = "rbxassetid://137903795082783",
+				Duration = 2
+			})
+		end
+	end
+})
+
