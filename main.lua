@@ -1904,7 +1904,7 @@ end
 
 --// Global State
 getgenv().ED_AntiKick = {
-	Enabled = true,
+	Enabled = false,
 	SendNotifications = true,
 	CheckCaller = true
 }
