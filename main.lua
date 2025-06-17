@@ -1771,6 +1771,7 @@ AddToggle(Config, {
 
 
 
+
 --// Botão Manual - Anti AFK
 
 AddButton(Servidor, {
