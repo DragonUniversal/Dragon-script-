@@ -1904,13 +1904,14 @@ end
 
 --// Global State
 getgenv().ED_AntiKick = {
-	Enabled = false,
+	Enabled = false, -- Começa DESATIVADO
 	SendNotifications = true,
 	CheckCaller = true
 }
 
 --// Main Hook
-local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+local OldNamecall
+OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 	local self, message = ...
 	local method = getnamecallmethod()
 
@@ -1921,7 +1922,7 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", newcclosure(
 
 		if CanCastToSTDString(message) then
 			if ED_AntiKick.SendNotifications then
-				SetCore(StarterGui, "SendNotification", {
+				SetCore("SendNotification", {
 					Title = "Vitor Developer - Anti-Kick",
 					Text = "Blocked a Kick attempt!",
 					Icon = "rbxassetid://137903795082783",
@@ -1935,14 +1936,16 @@ local OldNamecall; OldNamecall = hookmetamethod(game, "__namecall", newcclosure(
 	return OldNamecall(...)
 end))
 
-local OldFunction; OldFunction = hookfunction(LocalPlayer.Kick, newcclosure(function(self, message)
+--// Hook direct :Kick()
+local OldFunction
+OldFunction = hookfunction(LocalPlayer.Kick, newcclosure(function(self, message)
 	if ((ED_AntiKick.CheckCaller and not checkcaller()) or true)
 		and CompareInstances(self, LocalPlayer)
 		and ED_AntiKick.Enabled then
 
 		if CanCastToSTDString(message) then
 			if ED_AntiKick.SendNotifications then
-				SetCore(StarterGui, "SendNotification", {
+				SetCore("SendNotification", {
 					Title = "Vitor Developer - Anti-Kick",
 					Text = "Blocked a Kick attempt!",
 					Icon = "rbxassetid://137903795082783",
@@ -1955,25 +1958,25 @@ local OldFunction; OldFunction = hookfunction(LocalPlayer.Kick, newcclosure(func
 	return OldFunction(self, message)
 end))
 
--- Startup Notification
+--// Startup Notification (Status inicial)
 if ED_AntiKick.SendNotifications then
-	SetCore(StarterGui, "SendNotification", {
+	SetCore("SendNotification", {
 		Title = "Vitor Developer - Anti-Kick",
-		Text = "Anti-Kick ativo com sucesso.",
+		Text = "Anti-Kick carregado. Inicia DESATIVADO.",
 		Icon = "rbxassetid://137903795082783",
 		Duration = 3
 	})
 end
 
---// UI: Toggle Anti-Kick
+--// Toggle no menu
 AddToggle(Config, {
 	Name = "Anti Kick",
-	Default = true,
+	Default = false, -- Começa DESATIVADO no botão
 	Callback = function(Value)
 		ED_AntiKick.Enabled = Value
 
 		if ED_AntiKick.SendNotifications then
-			SetCore(StarterGui, "SendNotification", {
+			SetCore("SendNotification", {
 				Title = "Vitor Developer - Anti-Kick",
 				Text = "Anti-Kick " .. (Value and "Ativado" or "Desativado"),
 				Icon = "rbxassetid://137903795082783",
@@ -1982,4 +1985,3 @@ AddToggle(Config, {
 		end
 	end
 })
-
