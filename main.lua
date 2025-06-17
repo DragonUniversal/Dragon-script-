@@ -100,7 +100,7 @@ MakeNotifi({
 
 AddButton(Main, {
 
-    Name = "Fly GUI v4",
+    Name = "Fly GUI v5",
 
     Callback = function()
 
