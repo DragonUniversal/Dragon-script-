@@ -76,6 +76,8 @@ local Visuais = MakeTab({Name = "Visuals"})
 
 local Player = MakeTab({Name = "Player"})
 
+local Server = MakeTab({Name = "Server"})
+
 local Config = MakeTab({Name = "Settings"})
 
 
@@ -1769,219 +1771,235 @@ AddToggle(Config, {
 
 
 
-local Players = game:GetService("Players")
+--// Cache 
 
-local LocalPlayer = Players.LocalPlayer
-
-local RunService = game:GetService("RunService")
-
-local antiSeatEnabled = false
-local seatedConnection = nil
-local characterConnection = nil
-local seatWatcher = nil
-local ignoreSeats = {}
-
--- Impede o personagem de sentar
-local function preventSitting(character)
-	local humanoid = character:WaitForChild("Humanoid", 5)
-	if not humanoid then return end
-
-	if seatedConnection then
-		seatedConnection:Disconnect()
-	end
-
-	seatedConnection = humanoid.Seated:Connect(function(isSeated)
-		if isSeated and antiSeatEnabled then
-			humanoid.Sit = false
-		end
-	end)
-
-	if humanoid.Sit then
-		humanoid.Sit = false
-	end
-end
-
--- Torna todos os assentos não interativos
-local function disableSeatTouch()
-	for _, obj in ipairs(workspace:GetDescendants()) do
-		if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
-			if not ignoreSeats[obj] then
-				ignoreSeats[obj] = obj.CanTouch
-				obj.CanTouch = false
-			end
-		end
-	end
-end
-
--- Restaura os assentos
-local function restoreSeats()
-	for seat, original in pairs(ignoreSeats) do
-		if seat and seat:IsDescendantOf(workspace) then
-			seat.CanTouch = original
-		end
-	end
-	ignoreSeats = {}
-end
-
--- Observa novos assentos adicionados
-local function watchNewSeats()
-	if seatWatcher then seatWatcher:Disconnect() end
-	seatWatcher = workspace.DescendantAdded:Connect(function(desc)
-		if antiSeatEnabled and (desc:IsA("Seat") or desc:IsA("VehicleSeat")) then
-			task.wait(0.1)
-			if desc:IsDescendantOf(workspace) then
-				ignoreSeats[desc] = desc.CanTouch
-				desc.CanTouch = false
-			end
-		end
-	end)
-end
-
--- Toggle Anti Sit
-AddToggle(Config, {
-	Name = "Anti Sit",
-	Default = false,
-	Callback = function(Value)
-		antiSeatEnabled = Value
-
-		if Value then
-			if LocalPlayer.Character then
-				preventSitting(LocalPlayer.Character)
-			end
-
-			if characterConnection then
-				characterConnection:Disconnect()
-			end
-			characterConnection = LocalPlayer.CharacterAdded:Connect(preventSitting)
-
-			disableSeatTouch()
-			watchNewSeats()
-		else
-			if seatedConnection then
-				seatedConnection:Disconnect()
-				seatedConnection = nil
-			end
-			if characterConnection then
-				characterConnection:Disconnect()
-				characterConnection = nil
-			end
-			if seatWatcher then
-				seatWatcher:Disconnect()
-				seatWatcher = nil
-			end
-
-			restoreSeats()
-		end
-	end
-})
-
-
---// Cache
 local getgenv, getnamecallmethod, hookmetamethod, hookfunction, newcclosure, checkcaller, lower, gsub, match =
+
 	getgenv, getnamecallmethod, hookmetamethod, hookfunction, newcclosure, checkcaller, string.lower, string.gsub, string.match
 
+
+
 --// Loaded check
+
 if getgenv().ED_AntiKick then return end
 
+
+
 --// Variables
+
 local cloneref = cloneref or function(...) return ... end
+
 local clonefunction = clonefunction or function(...) return ... end
 
+
+
 local Players = cloneref(game:GetService("Players"))
+
 local LocalPlayer = cloneref(Players.LocalPlayer)
+
 local StarterGui = cloneref(game:GetService("StarterGui"))
 
+
+
 local SetCore = clonefunction(StarterGui.SetCore)
+
 local FindFirstChild = clonefunction(game.FindFirstChild)
 
+
+
 local CompareInstances = CompareInstances or function(i1, i2)
+
 	return typeof(i1) == "Instance" and typeof(i2) == "Instance"
+
 end
+
+
 
 local CanCastToSTDString = function(...)
+
 	return pcall(FindFirstChild, game, ...)
+
 end
+
+
 
 --// Global State
+
 getgenv().ED_AntiKick = {
-	Enabled = false, -- Começa DESATIVADO
+
+	Enabled = false, -- Inicia DESATIVADO
+
 	SendNotifications = true,
+
 	CheckCaller = true
+
 }
 
+
+
 --// Main Hook
+
 local OldNamecall
+
 OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+
 	local self, message = ...
+
 	local method = getnamecallmethod()
 
+
+
 	if ((ED_AntiKick.CheckCaller and not checkcaller()) or true)
+
 		and CompareInstances(self, LocalPlayer)
+
 		and gsub(method, "^%l", string.upper) == "Kick"
+
 		and ED_AntiKick.Enabled then
 
+
+
 		if CanCastToSTDString(message) then
+
 			if ED_AntiKick.SendNotifications then
+
 				SetCore("SendNotification", {
+
 					Title = "Vitor Developer - Anti-Kick",
-					Text = "Blocked a Kick attempt!",
+
+					Text = "Kick bloqueado com sucesso!",
+
 					Icon = "rbxassetid://137903795082783",
+
 					Duration = 2
+
 				})
+
 			end
+
 			return
+
 		end
+
 	end
+
+
 
 	return OldNamecall(...)
+
 end))
 
---// Hook direct :Kick()
+
+
+--// Hook direto no Kick
+
 local OldFunction
+
 OldFunction = hookfunction(LocalPlayer.Kick, newcclosure(function(self, message)
+
 	if ((ED_AntiKick.CheckCaller and not checkcaller()) or true)
+
 		and CompareInstances(self, LocalPlayer)
+
 		and ED_AntiKick.Enabled then
 
+
+
 		if CanCastToSTDString(message) then
+
 			if ED_AntiKick.SendNotifications then
+
 				SetCore("SendNotification", {
+
 					Title = "Vitor Developer - Anti-Kick",
-					Text = "Blocked a Kick attempt!",
+
+					Text = "Kick bloqueado com sucesso!",
+
 					Icon = "rbxassetid://137903795082783",
+
 					Duration = 2
+
 				})
+
 			end
+
 			return
+
 		end
+
 	end
+
 	return OldFunction(self, message)
+
 end))
 
---// Startup Notification (Status inicial)
+
+
+-- Startup Notification
+
 if ED_AntiKick.SendNotifications then
+
 	SetCore("SendNotification", {
+
 		Title = "Vitor Developer - Anti-Kick",
-		Text = "Anti-Kick carregado. Inicia DESATIVADO.",
+
+		Text = "Anti-Kick carregado, aguardando ativação manual.",
+
 		Icon = "rbxassetid://137903795082783",
+
 		Duration = 3
+
 	})
+
 end
 
---// Toggle no menu
-AddToggle(Config, {
-	Name = "Anti Kick",
-	Default = false, -- Começa DESATIVADO no botão
-	Callback = function(Value)
-		ED_AntiKick.Enabled = Value
 
-		if ED_AntiKick.SendNotifications then
+
+--// Botão Manual
+
+AddButton(Server, {
+
+	Name = "Anti Kick",
+
+	Callback = function()
+
+		if not ED_AntiKick.Enabled then
+
+			ED_AntiKick.Enabled = true
+
+			if ED_AntiKick.SendNotifications then
+
+				SetCore("SendNotification", {
+
+					Title = "Vitor Developer - Anti-Kick",
+
+					Text = "Anti-Kick Ativado!",
+
+					Icon = "rbxassetid://137903795082783",
+
+					Duration = 2
+
+				})
+
+			end
+
+		else
+
 			SetCore("SendNotification", {
+
 				Title = "Vitor Developer - Anti-Kick",
-				Text = "Anti-Kick " .. (Value and "Ativado" or "Desativado"),
+
+				Text = "Já está ativado.",
+
 				Icon = "rbxassetid://137903795082783",
+
 				Duration = 2
+
 			})
+
 		end
+
 	end
+
 })
+
