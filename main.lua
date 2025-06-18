@@ -1413,82 +1413,6 @@ AddButton(Player, {
 
 
 
-
-
-local Players = game:GetService("Players")
-
-local StarterGui = game:GetService("StarterGui")
-
-
-
-local notificacaoAtivada = false
-
-
-
--- Função para exibir notificações
-
-local function notify(title, text)
-
-    if notificacaoAtivada then
-
-        StarterGui:SetCore("SendNotification", {
-
-            Title = title,
-
-            Text = text,
-
-            Duration = 5
-
-        })
-
-    end
-
-end
-
-
-
--- Notifica quando um jogador entra no jogo
-
-Players.PlayerAdded:Connect(function(player)
-
-    notify(player.Name, "entered the game,")
-
-end)
-
-
-
--- Notifica quando um jogador sai do jogo
-
-Players.PlayerRemoving:Connect(function(player)
-
-    notify(player.Name, "left the game.")
-
-end)
-
-
-
--- Toggle para ativar/desativar notificações (sem aviso ao ativar)
-
-AddToggle(Config, {
-
-    Name = "Player Notifications",
-
-    Default = false,
-
-    Callback = function(Value)
-
-        notificacaoAtivada = Value
-
-    end
-
-})
-
-
-
-
-
-
-
 AddToggle(Config, {
 
     Name = "FPS",
@@ -1499,7 +1423,7 @@ AddToggle(Config, {
 
         local Players = game:GetService("Players")
 
-        local RunService = game:GetService("RunService")
+        local RunService =game:GetService("RunService")
 
         local player = Players.LocalPlayer
 
@@ -1649,8 +1573,6 @@ AddToggle(Config, {
 
 
 
-
-
 AddButton(Config, {
     Name = "FPS Boost",
     Callback = function()
@@ -1772,6 +1694,78 @@ AddToggle(Config, {
 
 
 
+local Players = game:GetService("Players")
+
+local StarterGui = game:GetService("StarterGui")
+
+
+
+local notificacaoAtivada = false
+
+
+
+-- Função para exibir notificações
+
+local function notify(title, text)
+
+    if notificacaoAtivada then
+
+        StarterGui:SetCore("SendNotification", {
+
+            Title = title,
+
+            Text = text,
+
+            Duration = 5
+
+        })
+
+    end
+
+end
+
+
+
+-- Notifica quando um jogador entra no jogo
+
+Players.PlayerAdded:Connect(function(player)
+
+    notify(player.Name, "entered the game,")
+
+end)
+
+
+
+-- Notifica quando um jogador sai do jogo
+
+Players.PlayerRemoving:Connect(function(player)
+
+    notify(player.Name, "left the game.")
+
+end)
+
+
+
+-- Toggle para ativar/desativar notificações (sem aviso ao ativar)
+
+AddToggle(Config, {
+
+    Name = "Player Notifications",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        notificacaoAtivada = Value
+
+    end
+
+})
+
+
+
+
+
 --// Botão Manual - Anti AFK
 
 AddButton(Servidor, {
@@ -1826,7 +1820,7 @@ AddButton(Servidor, {
 
 		game:GetService("StarterGui"):SetCore("SendNotification", {
 
-			Title = "AntiAFK",
+			Title = "Anti AFK",
 
 			Text = "Made By vitor",
 
