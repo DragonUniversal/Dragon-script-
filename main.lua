@@ -69,12 +69,11 @@ MinimizeButton({
 -- Criação da aba principal
 
 
-
 local Main = MakeTab({Name = "Main"})
 
-local Visuais = MakeTab({Name = "Visuals"})
-
 local Player = MakeTab({Name = "Player"})
+
+local Visuais = MakeTab({Name = "Visuals"})
 
 local Servidor = MakeTab({Name = "Server"})
 
