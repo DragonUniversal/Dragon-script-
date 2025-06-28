@@ -120,6 +120,61 @@ AddButton(Main, {
 
 
 
+local Players = game:GetService("Players")
+
+local RunService = game:GetService("RunService")
+
+
+
+local player = Players.LocalPlayer
+
+local noclipEnabled = false
+
+
+
+-- Toggle para ativar/desativar o noclip atravessar paredes
+
+AddToggle(Main, {
+
+    Name = "Disable Collisions(New)", 
+
+    Default = false,
+
+    Callback = function(Value)
+
+        noclipEnabled = Value
+
+        print("Noclip:", Value and "Ativado" or "Desativado")
+
+    end
+
+})
+
+
+
+
+
+-- Loop para desativar colisão 
+
+RunService.Stepped:Connect(function()
+
+    if noclipEnabled and player.Character then
+
+        for _, part in ipairs(player.Character:GetDescendants()) do
+
+            if part:IsA("BasePart") then
+
+                part.CanCollide = false
+
+            end
+
+        end
+
+    end
+
+end)
+
+
 
 -- Infinite Jump
 
@@ -182,59 +237,6 @@ local Toggle = AddToggle(Main, {
 })
 
 
-
-local Players = game:GetService("Players")
-
-local RunService = game:GetService("RunService")
-
-
-
-local player = Players.LocalPlayer
-
-local noclipEnabled = false
-
-
-
--- Toggle para ativar/desativar o noclip atravessar paredes
-
-AddToggle(Main, {
-
-    Name = "Disable Collisions(New)", 
-
-    Default = false,
-
-    Callback = function(Value)
-
-        noclipEnabled = Value
-
-        print("Noclip:", Value and "Ativado" or "Desativado")
-
-    end
-
-})
-
-
-
-
--- Loop para desativar colisão 
-
-RunService.Stepped:Connect(function()
-
-    if noclipEnabled and player.Character then
-
-        for _, part in ipairs(player.Character:GetDescendants()) do
-
-            if part:IsA("BasePart") then
-
-                part.CanCollide = false
-
-            end
-
-        end
-
-    end
-
-end)
 
 
 local Players = game:GetService("Players")
