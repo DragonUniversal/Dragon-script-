@@ -1392,7 +1392,287 @@ AddButton(Player, {
 
 
 
+--// Botão Manual - Anti AFK
 
+
+
+AddButton(Servidor, {
+
+	Name = "Anti AFK",
+
+	Callback = function()
+
+
+
+		-- Verifica se já está ativado para evitar múltiplas conexões
+
+		if getgenv().VitorAntiAFK_Enabled then
+
+			game:GetService("StarterGui"):SetCore("SendNotification", {
+
+				Title = "Anti Afk",
+
+				Text = "is already activating!",
+
+				Duration = 3
+
+			})
+
+			return
+
+		end
+
+
+
+		getgenv().VitorAntiAFK_Enabled = true
+
+
+
+		-- Código Anti-AFK
+
+		local VirtualUser = game:GetService('VirtualUser')
+
+
+
+		game:GetService('Players').LocalPlayer.Idled:Connect(function()
+
+			VirtualUser:CaptureController()
+
+			VirtualUser:ClickButton2(Vector2.new())
+
+		end)
+
+
+
+		-- Notificação
+
+		game:GetService("StarterGui"):SetCore("SendNotification", {
+
+			Title = "AntiAFK",
+
+			Text = "Made By vitor",
+
+			Button1 = "OK",
+
+			Duration = 5
+
+		})
+
+	end
+
+})
+
+
+
+local Players = game:GetService("Players")
+
+
+
+local LocalPlayer = Players.LocalPlayer
+
+
+
+local RunService = game:GetService("RunService")
+
+
+
+local antiSeatEnabled = false
+
+local seatedConnection = nil
+
+local characterConnection = nil
+
+local seatWatcher = nil
+
+local ignoreSeats = {}
+
+
+
+-- Impede o personagem de sentar
+
+local function preventSitting(character)
+
+	local humanoid = character:WaitForChild("Humanoid", 5)
+
+	if not humanoid then return end
+
+
+
+	if seatedConnection then
+
+		seatedConnection:Disconnect()
+
+	end
+
+
+
+	seatedConnection = humanoid.Seated:Connect(function(isSeated)
+
+		if isSeated and antiSeatEnabled then
+
+			humanoid.Sit = false
+
+		end
+
+	end)
+
+
+
+	if humanoid.Sit then
+
+		humanoid.Sit = false
+
+	end
+
+end
+
+
+
+-- Torna todos os assentos não interativos
+
+local function disableSeatTouch()
+
+	for _, obj in ipairs(workspace:GetDescendants()) do
+
+		if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
+
+			if not ignoreSeats[obj] then
+
+				ignoreSeats[obj] = obj.CanTouch
+
+				obj.CanTouch = false
+
+			end
+
+		end
+
+	end
+
+end
+
+
+
+-- Restaura os assentos
+
+local function restoreSeats()
+
+	for seat, original in pairs(ignoreSeats) do
+
+		if seat and seat:IsDescendantOf(workspace) then
+
+			seat.CanTouch = original
+
+		end
+
+	end
+
+	ignoreSeats = {}
+
+end
+
+
+
+-- Observa novos assentos adicionados
+
+local function watchNewSeats()
+
+	if seatWatcher then seatWatcher:Disconnect() end
+
+	seatWatcher = workspace.DescendantAdded:Connect(function(desc)
+
+		if antiSeatEnabled and (desc:IsA("Seat") or desc:IsA("VehicleSeat")) then
+
+			task.wait(0.1)
+
+			if desc:IsDescendantOf(workspace) then
+
+				ignoreSeats[desc] = desc.CanTouch
+
+				desc.CanTouch = false
+
+			end
+
+		end
+
+	end)
+
+end
+
+
+
+-- Toggle Anti Sit
+
+AddToggle(Servidor, {
+
+	Name = "Anti Sit",
+
+	Default = false,
+
+	Callback = function(Value)
+
+		antiSeatEnabled = Value
+
+
+
+		if Value then
+
+			if LocalPlayer.Character then
+
+				preventSitting(LocalPlayer.Character)
+
+			end
+
+
+
+			if characterConnection then
+
+				characterConnection:Disconnect()
+
+			end
+
+			characterConnection = LocalPlayer.CharacterAdded:Connect(preventSitting)
+
+
+
+			disableSeatTouch()
+
+			watchNewSeats()
+
+		else
+
+			if seatedConnection then
+
+				seatedConnection:Disconnect()
+
+				seatedConnection = nil
+
+			end
+
+			if characterConnection then
+
+				characterConnection:Disconnect()
+
+				characterConnection = nil
+
+			end
+
+			if seatWatcher then
+
+				seatWatcher:Disconnect()
+
+				seatWatcher = nil
+
+			end
+
+
+
+			restoreSeats()
+
+		end
+
+	end
+
+})
 
 
 
@@ -1742,292 +2022,6 @@ AddToggle(Config, {
         notificacaoAtivada = Value
 
     end
-
-})
-
-
-
-
-
---// Botão Manual - Anti AFK
-
-AddButton(Servidor, {
-
-	Name = "Anti AFK",
-
-	Callback = function()
-
-
-
-		-- Verifica se já está ativado para evitar múltiplas conexões
-
-		if getgenv().VitorAntiAFK_Enabled then
-
-			game:GetService("StarterGui"):SetCore("SendNotification", {
-
-				Title = "Anti Afk",
-
-				Text = "is already activating!",
-
-				Duration = 3
-
-			})
-
-			return
-
-		end
-
-
-
-		getgenv().VitorAntiAFK_Enabled = true
-
-
-
-		-- Código Anti-AFK
-
-		local VirtualUser = game:GetService('VirtualUser')
-
-
-
-		game:GetService('Players').LocalPlayer.Idled:Connect(function()
-
-			VirtualUser:CaptureController()
-
-			VirtualUser:ClickButton2(Vector2.new())
-
-		end)
-
-
-
-		-- Notificação
-
-		game:GetService("StarterGui"):SetCore("SendNotification", {
-
-			Title = "Anti AFK",
-
-			Text = "Made By vitor",
-
-			Button1 = "OK",
-
-			Duration = 5
-
-		})
-
-	end
-
-})
-
-
-
-
-
-local Players = game:GetService("Players")
-
-
-
-local LocalPlayer = Players.LocalPlayer
-
-
-
-local RunService = game:GetService("RunService")
-
-
-
-local antiSeatEnabled = false
-
-local seatedConnection = nil
-
-local characterConnection = nil
-
-local seatWatcher = nil
-
-local ignoreSeats = {}
-
-
-
--- Impede o personagem de sentar
-
-local function preventSitting(character)
-
-	local humanoid = character:WaitForChild("Humanoid", 5)
-
-	if not humanoid then return end
-
-
-
-	if seatedConnection then
-
-		seatedConnection:Disconnect()
-
-	end
-
-
-
-	seatedConnection = humanoid.Seated:Connect(function(isSeated)
-
-		if isSeated and antiSeatEnabled then
-
-			humanoid.Sit = false
-
-		end
-
-	end)
-
-
-
-	if humanoid.Sit then
-
-		humanoid.Sit = false
-
-	end
-
-end
-
-
-
--- Torna todos os assentos não interativos
-
-local function disableSeatTouch()
-
-	for _, obj in ipairs(workspace:GetDescendants()) do
-
-		if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
-
-			if not ignoreSeats[obj] then
-
-				ignoreSeats[obj] = obj.CanTouch
-
-				obj.CanTouch = false
-
-			end
-
-		end
-
-	end
-
-end
-
-
-
--- Restaura os assentos
-
-local function restoreSeats()
-
-	for seat, original in pairs(ignoreSeats) do
-
-		if seat and seat:IsDescendantOf(workspace) then
-
-			seat.CanTouch = original
-
-		end
-
-	end
-
-	ignoreSeats = {}
-
-end
-
-
-
--- Observa novos assentos adicionados
-
-local function watchNewSeats()
-
-	if seatWatcher then seatWatcher:Disconnect() end
-
-	seatWatcher = workspace.DescendantAdded:Connect(function(desc)
-
-		if antiSeatEnabled and (desc:IsA("Seat") or desc:IsA("VehicleSeat")) then
-
-			task.wait(0.1)
-
-			if desc:IsDescendantOf(workspace) then
-
-				ignoreSeats[desc] = desc.CanTouch
-
-				desc.CanTouch = false
-
-			end
-
-		end
-
-	end)
-
-end
-
-
-
--- Toggle Anti Sit
-
-AddToggle(Servidor, {
-
-	Name = "Anti Sit",
-
-	Default = false,
-
-	Callback = function(Value)
-
-		antiSeatEnabled = Value
-
-
-
-		if Value then
-
-			if LocalPlayer.Character then
-
-				preventSitting(LocalPlayer.Character)
-
-			end
-
-
-
-			if characterConnection then
-
-				characterConnection:Disconnect()
-
-			end
-
-			characterConnection = LocalPlayer.CharacterAdded:Connect(preventSitting)
-
-
-
-			disableSeatTouch()
-
-			watchNewSeats()
-
-		else
-
-			if seatedConnection then
-
-				seatedConnection:Disconnect()
-
-				seatedConnection = nil
-
-			end
-
-			if characterConnection then
-
-				characterConnection:Disconnect()
-
-				characterConnection = nil
-
-			end
-
-			if seatWatcher then
-
-				seatWatcher:Disconnect()
-
-				seatWatcher = nil
-
-			end
-
-
-
-			restoreSeats()
-
-		end
-
-	end
 
 })
 
