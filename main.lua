@@ -1,23 +1,26 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-/refs/heads/main/Library.lua"))()
 
-
-
 -- Cria a janela principal
-
 MakeWindow({
-
     Hub = {
-
-        Title = "Dragon Menu I Universal - v4",
-
-        Animation = "by : Vito0296poq"
-
+        Title = "Dragon Menu I Magnata Da Guerra - v2",
+        Animation = "by : Vito0296poq "
     },
-
     
-
-
-
+   Key = {
+        KeySystem = false, -- Ativa o sistema de Key
+        Title = "Sistema de Chave",
+        Description = "Digite a chave correta para continuar.",
+        KeyLink = "https://seusite.com/chave", -- Link para obter a chave (opcional)
+        Keys = {"1234", "chave-extra"}, -- Chaves válidas
+        Notifi = {
+            Notifications = true,
+            CorrectKey = "Chave correta! Iniciando script...",
+            Incorrectkey = "Chave incorreta, tente novamente.",
+            CopyKeyLink = "Link copiado!"
+        }
+    }
+})
 
 
 -- Botão de minimizar
