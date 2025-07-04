@@ -2125,7 +2125,10 @@ AddToggle(Config, {
 
 })
 
--- Aimbot
+
+
+
+-- Aimbot Universal 
 
 local Players = game:GetService("Players")
 
@@ -2137,7 +2140,7 @@ local Camera = workspace.CurrentCamera
 local AimbotEnabled = false
 local AimbotConnection = nil
 local FOVRadius = 100
-local AimbotTargetPart = "Head" -- Padrão
+local AimbotTargetPart = "Head"
 local ChangeMode = false
 
 -- Desenha o círculo de FOV
@@ -2209,18 +2212,5 @@ AddToggle(Config, {
             AimbotConnection:Disconnect()
             AimbotConnection = nil
         end
-    end
-})
-
--- Slider para controlar o tamanho do FOV
-AddSlider(Config, {
-    Name = "FOV",
-    MinValue = 16,
-    MaxValue = 250,
-    Default = FOVRadius,
-    Increase = 1,
-    Callback = function(Value)
-        FOVRadius = Value
-        FOVCircle.Radius = FOVRadius
     end
 })
