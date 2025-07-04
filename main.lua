@@ -1357,49 +1357,51 @@ AddButton(Player, {
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+
 local player = Players.LocalPlayer
-
 local antiVoidAtivo = false
-local conexaoQueda
-local posicaoSegura = Vector3.new(0, 10, 0)
+local conexaoMonitoramento
 
-local function ativarAntiVoid()
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-        conexaoQueda = RunService.Heartbeat:Connect(function()
-            if hrp.Position.Y < -50 then
-                hrp.CFrame = CFrame.new(posicaoSegura)
-            end
-        end)
+local posicaoCentro = Vector3.new(0, 20, 0)
+
+-- Monitoramento contínuo da posição do jogador
+local function monitorarQueda()
+    if conexaoMonitoramento then
+        conexaoMonitoramento:Disconnect()
+        conexaoMonitoramento = nil
     end
+
+    conexaoMonitoramento = RunService.Heartbeat:Connect(function()
+        local character = player.Character
+        local hrp = character and character:FindFirstChild("HumanoidRootPart")
+        if hrp and hrp.Position.Y < -50 then
+            hrp.CFrame = CFrame.new(posicaoCentro)
+        end
+    end)
 end
 
-local function desativarAntiVoid()
-    if conexaoQueda then
-        conexaoQueda:Disconnect()
-        conexaoQueda = nil
-    end
-end
-
--- Reconecta quando o personagem respawnar
-player.CharacterAdded:Connect(function(character)
+Players.LocalPlayer.CharacterAdded:Connect(function()
     if antiVoidAtivo then
-        character:WaitForChild("HumanoidRootPart")
-        ativarAntiVoid()
+        task.wait(1)
+        monitorarQueda()
     end
 end)
 
--- Toggle GUI
+-- Toggle Anti Void
 AddToggle(Servidor, {
     Name = "Anti Void",
-    Description = "Evita que seu personagem morra caindo no void.",
+    Description = ".",
     Default = false,
     Callback = function(Value)
         antiVoidAtivo = Value
+
         if Value then
-            ativarAntiVoid()
+            monitorarQueda()
         else
-            desativarAntiVoid()
+            if conexaoMonitoramento then
+                conexaoMonitoramento:Disconnect()
+                conexaoMonitoramento = nil
+            end
         end
     end
 })
