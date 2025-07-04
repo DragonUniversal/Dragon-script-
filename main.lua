@@ -1355,102 +1355,51 @@ AddButton(Player, {
 })
 
 
-
 local Players = game:GetService("Players")
-
 local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
 
+local antiVoidAtivo = false
+local conexaoQueda
+local posicaoSegura = Vector3.new(0, 10, 0)
 
+local function ativarAntiVoid()
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        conexaoQueda = RunService.Heartbeat:Connect(function()
+            if hrp.Position.Y < -50 then
+                hrp.CFrame = CFrame.new(posicaoSegura)
+            end
+        end)
+    end
+end
 
-local LocalPlayer = Players.LocalPlayer
+local function desativarAntiVoid()
+    if conexaoQueda then
+        conexaoQueda:Disconnect()
+        conexaoQueda = nil
+    end
+end
 
-local plataformaAntiVoid = nil
+-- Reconecta quando o personagem respawnar
+player.CharacterAdded:Connect(function(character)
+    if antiVoidAtivo then
+        character:WaitForChild("HumanoidRootPart")
+        ativarAntiVoid()
+    end
+end)
 
-local conexaoCheckVoid = nil
-
-
-
+-- Toggle GUI
 AddToggle(Servidor, {
-
-	Name = "Anti Void",
-
-	Description = "Evita que seu personagem morra caindo no void.",
-
-	Default = false,
-
-	Callback = function(Value)
-
-		if Value then
-
-			-- Criar plataforma invisível abaixo do mapa
-
-			if not plataformaAntiVoid then
-
-				plataformaAntiVoid = Instance.new("Part")
-
-				plataformaAntiVoid.Size = Vector3.new(5000, 1, 5000)
-
-				plataformaAntiVoid.Position = Vector3.new(0, -20, 0)
-
-				plataformaAntiVoid.Anchored = true
-
-				plataformaAntiVoid.Transparency = 1
-
-				plataformaAntiVoid.CanCollide = true
-
-				plataformaAntiVoid.Name = "AntiVoidPlatform"
-
-				plataformaAntiVoid.Parent = workspace
-
-			end
-
-
-
-			-- Garantir que o personagem não ultrapasse certo limite
-
-			conexaoCheckVoid = RunService.Heartbeat:Connect(function()
-
-				local char = LocalPlayer.Character
-
-				local root = char and char:FindFirstChild("HumanoidRootPart")
-
-
-
-				if root and root.Position.Y < -50 then
-
-					-- Teleporta de volta ao chão
-
-					root.CFrame = CFrame.new(0, 10, 0)
-
-				end
-
-			end)
-
-		else
-
-			-- Desativar AntiVoid
-
-			if plataformaAntiVoid then
-
-				plataformaAntiVoid:Destroy()
-
-				plataformaAntiVoid = nil
-
-			end
-
-
-
-			if conexaoCheckVoid then
-
-				conexaoCheckVoid:Disconnect()
-
-				conexaoCheckVoid = nil
-
-			end
-
-		end
-
-	end
-
+    Name = "Anti Void",
+    Description = "Evita que seu personagem morra caindo no void.",
+    Default = false,
+    Callback = function(Value)
+        antiVoidAtivo = Value
+        if Value then
+            ativarAntiVoid()
+        else
+            desativarAntiVoid()
+        end
+    end
 })
-
