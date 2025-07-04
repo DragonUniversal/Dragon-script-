@@ -1,5 +1,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-/refs/heads/main/Library.lua"))()
 
+
+
 -- Cria a janela principal
 
 MakeWindow({
@@ -79,6 +81,7 @@ local Auxílio = MakeTab({Name = "Look"})
 
 
 
+
 MakeNotifi({
 
   Title = "Dragon Menu",
@@ -88,6 +91,8 @@ MakeNotifi({
   Time = 5
 
 })
+
+
 
 
 AddButton(Main, {
