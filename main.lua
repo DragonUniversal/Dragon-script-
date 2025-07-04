@@ -1,4 +1,4 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-/refs/heads/main/Library.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Snxdfer/back-ups-for-libs/refs/heads/main/RedzUI.lua"))()
 
 
 
@@ -15,35 +15,8 @@ MakeWindow({
     },
 
     
-   Key = {
 
-        KeySystem = true,
-
-        Title = "Sistema de Chave",
-
-        Description = "Digite a chave correta para continuar.",
-
-        KeyLink = "https://discord.gg/RU9XgDyW",
-
-        Keys = {"Dragon", "1_3f468"},
-
-        Notifi = {
-
-            Notifications = true,
-
-            CorrectKey = "Chave correta! Iniciando script...",
-
-            Incorrectkey = "Chave incorreta, tente novamente.",
-
-            CopyKeyLink = "Link copiado!"
-
-        }
-
-    }
-
-})
-
-
+   
 
 -- Botão de minimizar
 
@@ -67,6 +40,8 @@ MinimizeButton({
 
 -- Criação da aba principal
 
+
+
 local Main = MakeTab({Name = "Main"})
 
 local Player = MakeTab({Name = "Player"})
@@ -75,9 +50,10 @@ local Visuais = MakeTab({Name = "Visuals"})
 
 local Servidor = MakeTab({Name = "Server"})
 
+local Auxílio = MakeTab({Name = "Look"})
+
 local Config = MakeTab({Name = "Settings"})
 
-local Auxílio = MakeTab({Name = "Look"})
 
 
 
@@ -91,6 +67,7 @@ MakeNotifi({
   Time = 5
 
 })
+
 
 
 
@@ -1141,8 +1118,6 @@ AddToggle(Visuais, {
 
 })
 
-
-
 local Players = game:GetService("Players") 
 
 local LocalPlayer = Players.LocalPlayer
@@ -1322,6 +1297,8 @@ AddToggle(Player, {
 	end
 
 })
+
+
 
 -- Botão de teleporte único
 
@@ -2055,6 +2032,8 @@ AddToggle(Config, {
 
 
 
+
+
 local Players = game:GetService("Players")
 
 
@@ -2125,4 +2104,4 @@ AddToggle(Config, {
 
 })
 
-
+		
