@@ -16,33 +16,7 @@ MakeWindow({
 
     
 
-   Key = {
 
-        KeySystem = true,
-
-        Title = "Sistema de Chave",
-
-        Description = "Digite a chave correta para continuar.",
-
-        KeyLink = "https://discord.gg/RU9XgDyW",
-
-        Keys = {"Dragon", "1_3f468"},
-
-        Notifi = {
-
-            Notifications = true,
-
-            CorrectKey = "Chave correta! Iniciando script...",
-
-            Incorrectkey = "Chave incorreta, tente novamente.",
-
-            CopyKeyLink = "Link copiado!"
-
-        }
-
-    }
-
-})
 
 
 
