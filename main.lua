@@ -1354,3 +1354,103 @@ AddButton(Player, {
 
 })
 
+
+
+local Players = game:GetService("Players")
+
+local RunService = game:GetService("RunService")
+
+
+
+local LocalPlayer = Players.LocalPlayer
+
+local plataformaAntiVoid = nil
+
+local conexaoCheckVoid = nil
+
+
+
+AddToggle(Servidor, {
+
+	Name = "Anti Void",
+
+	Description = "Evita que seu personagem morra caindo no void.",
+
+	Default = false,
+
+	Callback = function(Value)
+
+		if Value then
+
+			-- Criar plataforma invisível abaixo do mapa
+
+			if not plataformaAntiVoid then
+
+				plataformaAntiVoid = Instance.new("Part")
+
+				plataformaAntiVoid.Size = Vector3.new(5000, 1, 5000)
+
+				plataformaAntiVoid.Position = Vector3.new(0, -20, 0)
+
+				plataformaAntiVoid.Anchored = true
+
+				plataformaAntiVoid.Transparency = 1
+
+				plataformaAntiVoid.CanCollide = true
+
+				plataformaAntiVoid.Name = "AntiVoidPlatform"
+
+				plataformaAntiVoid.Parent = workspace
+
+			end
+
+
+
+			-- Garantir que o personagem não ultrapasse certo limite
+
+			conexaoCheckVoid = RunService.Heartbeat:Connect(function()
+
+				local char = LocalPlayer.Character
+
+				local root = char and char:FindFirstChild("HumanoidRootPart")
+
+
+
+				if root and root.Position.Y < -50 then
+
+					-- Teleporta de volta ao chão
+
+					root.CFrame = CFrame.new(0, 10, 0)
+
+				end
+
+			end)
+
+		else
+
+			-- Desativar AntiVoid
+
+			if plataformaAntiVoid then
+
+				plataformaAntiVoid:Destroy()
+
+				plataformaAntiVoid = nil
+
+			end
+
+
+
+			if conexaoCheckVoid then
+
+				conexaoCheckVoid:Disconnect()
+
+				conexaoCheckVoid = nil
+
+			end
+
+		end
+
+	end
+
+})
+
