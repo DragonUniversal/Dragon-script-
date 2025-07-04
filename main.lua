@@ -1,5 +1,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Snxdfer/back-ups-for-libs/refs/heads/main/RedzUI.lua"))()
 
+
+
 -- Cria a janela principal
 
 MakeWindow({
@@ -13,6 +15,7 @@ MakeWindow({
     },
 
     
+
    Key = {
 
         KeySystem = true,
@@ -21,7 +24,7 @@ MakeWindow({
 
         Description = "Digite a chave correta para continuar.",
 
-        KeyLink = "",
+        KeyLink = "https://discord.gg/RU9XgDyW",
 
         Keys = {"Dragon", "1_3f468"},
 
@@ -41,6 +44,8 @@ MakeWindow({
 
 })
 
+
+
 -- Botão de minimizar
 
 MinimizeButton({
@@ -59,7 +64,11 @@ MinimizeButton({
 
 })
 
+
+
 -- Criação da aba principal
+
+
 
 local Main = MakeTab({Name = "Main"})
 
@@ -71,6 +80,10 @@ local Servidor = MakeTab({Name = "Server"})
 
 local Config = MakeTab({Name = "Settings"})
 
+
+
+
+
 MakeNotifi({
 
   Title = "Dragon Menu",
@@ -80,6 +93,10 @@ MakeNotifi({
   Time = 5
 
 })
+
+
+
+
 
 AddButton(Main, {
 
@@ -99,9 +116,15 @@ AddButton(Main, {
 
 })
 
+
+
+
+
 -- Noclip
 
 local noclipConnection
+
+
 
 function toggleNoclip(enable)
 
@@ -149,6 +172,8 @@ function toggleNoclip(enable)
 
 end
 
+
+
 -- Toggle para ativar/desativar colisão
 
 AddToggle(Main, {
@@ -164,6 +189,10 @@ AddToggle(Main, {
     end
 
 })
+
+
+
+
 
 -- Infinite Jump
 
@@ -207,6 +236,8 @@ local function toggleInfiniteJump(enable)
 
 end
 
+
+
 -- Toggle para ativar/desativar pulo infinito
 
 local Toggle = AddToggle(Main, {
@@ -223,6 +254,10 @@ local Toggle = AddToggle(Main, {
 
 })
 
+
+
+
+
 local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
@@ -232,6 +267,7 @@ local LocalPlayer = Players.LocalPlayer
 local velocidadeAtivada = false
 
 local velocidadeValor = 25 -- valor inicial
+
 
 
 -- Slider de Velocidade
@@ -270,6 +306,10 @@ AddSlider(Main, {
 
 })
 
+
+
+
+
 -- Toggle para ativar/desativar a velocidade
 
 AddToggle(Main, {
@@ -296,11 +336,17 @@ AddToggle(Main, {
 
 })
 
+
+
+
+
 local jumpAtivado = false
 
 local jumpPowerSelecionado = 25
 
-local jumpPowerPadrao = 50
+local jumpPowerPadrao = 50  -- Valor padrão do JumpPower do Roblox
+
+
 
 -- Função para aplicar ou restaurar altura do pulo
 
@@ -330,6 +376,8 @@ local function aplicarJumpPower()
 
 end
 
+
+
 -- Slider de Altura do Pulo
 
 AddSlider(Main, {
@@ -358,6 +406,10 @@ AddSlider(Main, {
 
 })
 
+
+
+
+
 -- Toggle para ativar/desativar altura do pulo
 
 AddToggle(Main, {
@@ -376,11 +428,17 @@ AddToggle(Main, {
 
 })
 
+
+
+
+
 local gravidadeAtivada = false
 
 local gravidadeSelecionada = 196.2 -- valor padrão
 
 local gravidadePadrao = 196.2
+
+
 
 -- Slider para ajustar a gravidade
 
@@ -410,6 +468,8 @@ AddSlider(Main, {
 
 })
 
+
+
 -- Toggle para ativar/desativar o controle de gravidade
 
 AddToggle(Main, {
@@ -436,21 +496,31 @@ AddToggle(Main, {
 
 })
 
+
+
+
+
 -- Variáveis de controle
 
 local espAtivado = false
 
 local connections = {}
 
+
+
 local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
+
+
 
 -- Função para criar ESP
 
 local function criarESP(player)
 
     if player == LocalPlayer then return end
+
+
 
     task.spawn(function()
 
@@ -520,6 +590,8 @@ local function criarESP(player)
 
                 end
 
+
+
                 local texto = esp:FindFirstChild("Texto")
 
                 if texto and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
@@ -540,6 +612,8 @@ local function criarESP(player)
 
 end
 
+
+
 -- Monitorar jogadores
 
 local function monitorarPlayer(player)
@@ -548,7 +622,9 @@ local function monitorarPlayer(player)
 
         connections[player]:Disconnect()
 
-    end)
+    end
+
+
 
     connections[player] = player.CharacterAdded:Connect(function()
 
@@ -562,9 +638,13 @@ local function monitorarPlayer(player)
 
     end)
 
+
+
     criarESP(player)
 
-end)
+end
+
+
 
 -- Toggle para ativar/desativar o ESP
 
@@ -646,17 +726,25 @@ AddToggle(Visuais, {
 
 })
 
+
+
+
+
 -- Variável global para controlar o estado do ESP
 
 local espAtivado = false
 
- - Serviços necessários
+
+
+-- Serviços necessários
 
 local Players = game:GetService("Players")
 
 local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
+
+
 
 -- Função para aplicar o Highlight
 
@@ -688,6 +776,8 @@ local function aplicarHighlight(player)
 
 end
 
+
+
 -- Função para remover o Highlight
 
 local function removerHighlight(player)
@@ -707,6 +797,8 @@ local function removerHighlight(player)
     end
 
 end
+
+
 
 -- Loop de atualização contínua
 
@@ -732,6 +824,8 @@ RunService.RenderStepped:Connect(function()
 
 end)
 
+
+
 -- Monitorar novos jogadores
 
 Players.PlayerAdded:Connect(function(player)
@@ -748,6 +842,8 @@ Players.PlayerAdded:Connect(function(player)
 
 end)
 
+
+
 -- Toggle para ativar/desativar o ESP
 
 AddToggle(Visuais, {
@@ -763,6 +859,10 @@ AddToggle(Visuais, {
     end
 
 })
+
+
+
+
 
 local Players = game:GetService("Players")
 
@@ -926,6 +1026,8 @@ function desativarESP()
 
 end
 
+
+
 AddToggle(Visuais, {
 
     Name = "ESP Line",
@@ -949,6 +1051,10 @@ AddToggle(Visuais, {
     end
 
 })
+
+
+
+
 
 local fovAtivado = false
 
@@ -1220,8 +1326,6 @@ AddToggle(Player, {
 
 })
 
-
-
 -- Botão de teleporte único
 
 AddButton(Player, {
@@ -1262,70 +1366,7 @@ AddButton(Player, {
 
 
 
-
-
-local Players = game:GetService("Players")
-
-local StarterGui = game:GetService("StarterGui")
-
-
-
-local notificacaoAtivada = false
-
-
-
--- Função para exibir notificações
-
-local function notify(title, text)
-
-    if notificacaoAtivada then
-
-        StarterGui:SetCore("SendNotification", {
-
-            Title = title,
-
-            Text = text,
-
-            Duration = 5
-
-        })
-
-    end
-
-end
-
-
--- Notifica quando um jogador entra no jogo
-
-Players.PlayerAdded:Connect(function(player)
-
-    notify(player.Name, "entered the game,")
-
-end)
-
--- Notifica quando um jogador sai do jogo
-
-Players.PlayerRemoving:Connect(function(player)
-
-    notify(player.Name, "left the game.")
-
-end)
-
--- Toggle para ativar/desativar notificações (sem aviso ao ativar)
-
-AddToggle(Config, {
-
-    Name = "Player Notifications",
-
-    Default = false,
-
-    Callback = function(Value)
-
-        notificacaoAtivada = Value
-
-    end
-
-})
+-- Botão Anti AFK
 
 
 
@@ -1334,6 +1375,7 @@ AddButton(Servidor, {
 	Name = "Anti AFK",
 
 	Callback = function()
+
 
 
 		-- Verifica se já está ativado para evitar múltiplas conexões
@@ -1355,11 +1397,16 @@ AddButton(Servidor, {
 		end
 
 
+
 		getgenv().VitorAntiAFK_Enabled = true
+
+
 
 		-- Código Anti-AFK
 
 		local VirtualUser = game:GetService('VirtualUser')
+
+
 
 		game:GetService('Players').LocalPlayer.Idled:Connect(function()
 
@@ -1368,6 +1415,7 @@ AddButton(Servidor, {
 			VirtualUser:ClickButton2(Vector2.new())
 
 		end)
+
 
 
 		-- Notificação
@@ -1389,11 +1437,20 @@ AddButton(Servidor, {
 })
 
 
+
+
+
 local Players = game:GetService("Players")
+
+
 
 local LocalPlayer = Players.LocalPlayer
 
+
+
 local RunService = game:GetService("RunService")
+
+
 
 local antiSeatEnabled = false
 
@@ -1446,6 +1503,7 @@ local function preventSitting(character)
 end
 
 
+
 -- Torna todos os assentos não interativos
 
 local function disableSeatTouch()
@@ -1469,6 +1527,7 @@ local function disableSeatTouch()
 end
 
 
+
 -- Restaura os assentos
 
 local function restoreSeats()
@@ -1486,6 +1545,7 @@ local function restoreSeats()
 	ignoreSeats = {}
 
 end
+
 
 
 -- Observa novos assentos adicionados
@@ -1514,6 +1574,8 @@ local function watchNewSeats()
 
 end
 
+
+
 -- Toggle Anti Sit
 
 AddToggle(Servidor, {
@@ -1526,6 +1588,8 @@ AddToggle(Servidor, {
 
 		antiSeatEnabled = Value
 
+
+
 		if Value then
 
 			if LocalPlayer.Character then
@@ -1533,6 +1597,7 @@ AddToggle(Servidor, {
 				preventSitting(LocalPlayer.Character)
 
 			end
+
 
 
 			if characterConnection then
@@ -1575,6 +1640,8 @@ AddToggle(Servidor, {
 
 			end
 
+
+
 			restoreSeats()
 
 		end
@@ -1582,6 +1649,9 @@ AddToggle(Servidor, {
 	end
 
 })
+
+
+
 
 
 AddToggle(Config, {
@@ -1746,8 +1816,6 @@ AddToggle(Config, {
 
 
 
-
-
 AddButton(Config, {
 
     Name = "FPS Boost",
@@ -1820,9 +1888,9 @@ AddButton(Config, {
 
 
 
-
-
 local Lighting = game:GetService("Lighting")  
+
+
 
 -- Armazena configurações originais
 
@@ -1842,6 +1910,8 @@ local originalSettings = {
 
 }
 
+
+
 local fullBrightEnabled = false
 
 local connections = {}
@@ -1853,6 +1923,8 @@ local connections = {}
 local function enableMorningLight()
 
 	fullBrightEnabled = true
+
+
 
 	Lighting.Brightness = 1.5
 
@@ -1867,7 +1939,8 @@ local function enableMorningLight()
 	Lighting.GlobalShadows = true
 
 
- -- Protege propriedades de alterações externas
+
+	-- Protege propriedades de alterações externas
 
 	table.insert(connections, Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
 
@@ -1967,7 +2040,7 @@ AddToggle(Config, {
 
 	Default = false,
 
-	Callback = funtion(state) 
+	Callback = function(state) 
 
 		if state then 
 
@@ -1984,11 +2057,17 @@ AddToggle(Config, {
 })
 
 
+
 local Players = game:GetService("Players")
+
+
 
 local StarterGui = game:GetService("StarterGui")
 
+
+
 local notificacaoAtivada = false
+
 
 
 -- Função para exibir notificações
@@ -2011,6 +2090,8 @@ local function notify(title, text)
 
 end
 
+
+
 -- Notifica quando um jogador entra no jogo
 
 Players.PlayerAdded:Connect(function(player)
@@ -2019,6 +2100,8 @@ Players.PlayerAdded:Connect(function(player)
 
 end)
 
+
+
 -- Notifica quando um jogador sai do jogo
 
 Players.PlayerRemoving:Connect(function(player)
@@ -2026,6 +2109,8 @@ Players.PlayerRemoving:Connect(function(player)
     notify(player.Name, "left the game.")
 
 end)
+
+
 
 -- Toggle para ativar/desativar notificações (sem aviso ao ativar)
 
