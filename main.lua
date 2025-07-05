@@ -1355,6 +1355,20 @@ AddButton(Player, {
 })
 
 
+-- Botão Rejoin
+AddButton(Servidor, {
+	Name = "Rejoin",
+	Callback = function()
+		local TeleportService = cloneref(game:GetService("TeleportService"))
+		local Players = cloneref(game:GetService("Players"))
+		local LocalPlayer = cloneref(Players.LocalPlayer)
+
+		-- Reentra no mesmo lugar do Servidor
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+	end
+})
+
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
