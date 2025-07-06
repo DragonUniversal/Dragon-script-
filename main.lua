@@ -1364,65 +1364,12 @@ AddButton(Servidor, {
 		local LocalPlayer = cloneref(Players.LocalPlayer)
 
 		-- Reentra no mesmo lugar do Servidor
-		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LoalPlayer)
 	end
 })
 
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-
-local player = Players.LocalPlayer
-local antiVoidAtivo = false
-local conexaoMonitoramento
-
-local posicaoCentro = Vector3.new(0, 20, 0)
-
--- Monitoramento contínuo da posição do jogador
-local function monitorarQueda()
-    if conexaoMonitoramento then
-        conexaoMonitoramento:Disconnect()
-        conexaoMonitoramento = nil
-    end
-
-    conexaoMonitoramento = RunService.Heartbeat:Connect(function()
-        local character = player.Character
-        local hrp = character and character:FindFirstChild("HumanoidRootPart")
-        if hrp and hrp.Position.Y < -50 then
-            hrp.CFrame = CFrame.new(posicaoCentro)
-        end
-    end)
-end
-
-Players.LocalPlayer.CharacterAdded:Connect(function()
-    if antiVoidAtivo then
-        task.wait(1)
-        monitorarQueda()
-    end
-end)
-
--- Toggle Anti Void
-AddToggle(Servidor, {
-    Name = "Anti Void",
-    Description = ".",
-    Default = false,
-    Callback = function(Value)
-        antiVoidAtivo = Value
-
-        if Value then
-            monitorarQueda()
-        else
-            if conexaoMonitoramento then
-                conexaoMonitoramento:Disconnect()
-                conexaoMonitoramento = nil
-            end
-        end
-    end
-})
-
 -- Botão Anti AFK
-
-
 
 AddButton(Servidor, {
 
@@ -1491,6 +1438,57 @@ AddButton(Servidor, {
 })
 
 
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local antiVoidAtivo = false
+local conexaoMonitoramento
+
+local posicaoCentro = Vector3.new(0, 20, 0)
+
+-- Monitoramento contínuo da posição do jogador
+local function monitorarQueda()
+    if conexaoMonitoramento then
+        conexaoMonitoramento:Disconnect()
+        conexaoMonitoramento = nil
+    end
+
+    conexaoMonitoramento = RunService.Heartbeat:Connect(function()
+        local character = player.Character
+        local hrp = character and character:FindFirstChild("HumanoidRootPart")
+        if hrp and hrp.Position.Y < -50 then
+            hrp.CFrame = CFrame.new(posicaoCentro)
+        end
+    end)
+end
+
+Players.LocalPlayer.CharacterAdded:Connect(function()
+    if antiVoidAtivo then
+        task.wait(1)
+        monitorarQueda()
+    end
+end)
+
+-- Toggle Anti Void
+AddToggle(Servidor, {
+    Name = "Anti Void",
+    Description = ".",
+    Default = false,
+    Callback = function(Value)
+        antiVoidAtivo = Value
+
+        if Value then
+            monitorarQueda()
+        else
+            if conexaoMonitoramento then
+                conexaoMonitoramento:Disconnect()
+                conexaoMonitoramento = nil
+            end
+        end
+    end
+})
 
 
 
@@ -1710,6 +1708,80 @@ AddToggle(Servidor, {
 
 
 
+
+
+
+
+
+AddButton(Config, {
+
+    Name = "FPS Boost",
+
+    Callback = function()
+
+        print("Botão foi clicado!")
+
+
+
+        pcall(function()
+
+            -- Otimiza todas as partes para reduzir o impacto gráfico
+
+            for _, v in ipairs(workspace:GetDescendants()) do
+
+                if v:IsA("Part") or v:IsA("MeshPart") or v:IsA("UnionOperation") then
+
+                    v.Material = Enum.Material.SmoothPlastic -- Remove texturas complexas
+
+                    v.Reflectance = 0 -- Remove reflexos
+
+                    v.CastShadow = false -- Desativa sombras
+
+                elseif v:IsA("Decal") or v:IsA("Texture") then
+
+                    v.Transparency = 1 -- Oculta texturas e decals
+
+                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Explosion") then
+
+                    v:Destroy() -- Remove efeitos que consomem desempenho
+
+                end
+
+            end
+
+
+
+            -- Ajusta configurações para melhorar o FPS
+
+            pcall(function()
+
+                settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 -- Reduz qualidade gráfica
+
+                workspace.GlobalShadows = false -- Remove sombras globais
+
+
+
+                if game:FindFirstChild("Lighting") then
+
+                    local lighting = game.Lighting
+
+                    lighting.FogEnd = 1e10 -- Remove neblina
+
+                    lighting.GlobalShadows = false
+
+                    lighting.Brightness = 2
+
+                end
+
+            end)
+
+        end)
+
+    end
+
+})
+
+
 AddToggle(Config, {
 
     Name = "FPS",
@@ -1867,80 +1939,6 @@ AddToggle(Config, {
     end
 
 })
-
-
-
-
-
-AddButton(Config, {
-
-    Name = "FPS Boost",
-
-    Callback = function()
-
-        print("Botão foi clicado!")
-
-
-
-        pcall(function()
-
-            -- Otimiza todas as partes para reduzir o impacto gráfico
-
-            for _, v in ipairs(workspace:GetDescendants()) do
-
-                if v:IsA("Part") or v:IsA("MeshPart") or v:IsA("UnionOperation") then
-
-                    v.Material = Enum.Material.SmoothPlastic -- Remove texturas complexas
-
-                    v.Reflectance = 0 -- Remove reflexos
-
-                    v.CastShadow = false -- Desativa sombras
-
-                elseif v:IsA("Decal") or v:IsA("Texture") then
-
-                    v.Transparency = 1 -- Oculta texturas e decals
-
-                elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Explosion") then
-
-                    v:Destroy() -- Remove efeitos que consomem desempenho
-
-                end
-
-            end
-
-
-
-            -- Ajusta configurações para melhorar o FPS
-
-            pcall(function()
-
-                settings().Rendering.QualityLevel = Enum.QualityLevel.Level01 -- Reduz qualidade gráfica
-
-                workspace.GlobalShadows = false -- Remove sombras globais
-
-
-
-                if game:FindFirstChild("Lighting") then
-
-                    local lighting = game.Lighting
-
-                    lighting.FogEnd = 1e10 -- Remove neblina
-
-                    lighting.GlobalShadows = false
-
-                    lighting.Brightness = 2
-
-                end
-
-            end)
-
-        end)
-
-    end
-
-})
-
-
 
 
 
