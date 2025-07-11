@@ -4,7 +4,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Drago
 MakeWindow({
     Hub = {
         Title = "Dragon Menu I Universal - v5.1",
-        Animation = "by : Vito0296poq "
+        Animation = "by : Vitor Developer"
     },
     
    Key = {
@@ -58,8 +58,6 @@ MinimizeButton({
 
 -- Criação da aba principal
 
-
-
 local Main = MakeTab({Name = "Main"})
 
 local Player = MakeTab({Name = "Player"})
@@ -83,8 +81,6 @@ MakeNotifi({
   Time = 5
 
 })
-
-
 
 
 
@@ -1156,7 +1152,7 @@ local dropdownRef = nil
 
 
 
--- Função para encontrar jogador pelo nome digitado (busca parcial)
+-- Função para encontrar jogador
 
 local function encontrarJogador(nome)
 
@@ -1369,75 +1365,149 @@ AddButton(Servidor, {
 })
 
 
--- Botão Anti AFK
+-- Serviços
+
+local Players = game:GetService("Players")
+
+local StarterGui = game:GetService("StarterGui")
+
+local VirtualUser = game:GetService("VirtualUser")
+
+local LocalPlayer = Players.LocalPlayer
+
+
+
+-- Notificação útil
+
+local function Notify(title, text)
+
+    pcall(function()
+
+        StarterGui:SetCore("SendNotification", {
+
+            Title = title,
+
+            Text = text,
+
+            Icon = "rbxassetid://137903795082783",
+
+            Duration = 3
+
+        })
+
+    end)
+
+end
+
+
+
+-- Botão: Anti AFK
 
 AddButton(Servidor, {
 
-	Name = "Anti AFK",
+    Name = "Anti AFK",
 
-	Callback = function()
+    Callback = function()
 
+        LocalPlayer.Idled:Connect(function()
 
+            VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 
-		-- Verifica se já está ativado para evitar múltiplas conexões
+            wait(1)
 
-		if getgenv().VitorAntiAFK_Enabled then
+            VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 
-			game:GetService("StarterGui"):SetCore("SendNotification", {
+        end)
 
-				Title = "Anti Afk",
+        Notify("Vitor Developer", "Anti AFK Enabled")
 
-				Text = "is already activating!",
-
-				Duration = 3
-
-			})
-
-			return
-
-		end
-
-
-
-		getgenv().VitorAntiAFK_Enabled = true
-
-
-
-		-- Código Anti-AFK
-
-		local VirtualUser = game:GetService('VirtualUser')
-
-
-
-		game:GetService('Players').LocalPlayer.Idled:Connect(function()
-
-			VirtualUser:CaptureController()
-
-			VirtualUser:ClickButton2(Vector2.new())
-
-		end)
-
-
-
-		-- Notificação
-
-		game:GetService("StarterGui"):SetCore("SendNotification", {
-
-			Title = "AntiAFK",
-
-			Text = "Made By vitor",
-
-			Button1 = "OK",
-
-			Duration = 5
-
-		})
-
-	end
+    end
 
 })
 
 
+
+-- Serviços
+
+local Players = game:GetService("Players")
+
+local StarterGui = game:GetService("StarterGui")
+
+local LocalPlayer = Players.LocalPlayer
+
+
+
+-- Estado de ativação
+
+local antiKickEnabled = false
+
+local oldNamecallHook
+
+
+
+-- Notificar apenas quando um kick for bloqueado
+
+local function NotifyKickBlocked()
+
+    pcall(function()
+
+        StarterGui:SetCore("SendNotification", {
+
+            Title = "Vitor Developer",
+
+            Text = "Kick attempt blocked",
+
+            Icon = "rbxassetid://137903795082783",
+
+            Duration = 3
+
+        })
+
+    end)
+
+end
+
+
+
+-- Hook global
+
+if not oldNamecallHook then
+
+    oldNamecallHook = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+
+        local method = getnamecallmethod()
+
+        if antiKickEnabled and typeof(method) == "string" and string.lower(method) == "kick" and self == LocalPlayer then
+
+            NotifyKickBlocked()
+
+            return wait(9e9)
+
+        end
+
+        return oldNamecallHook(self, ...)
+
+    end))
+
+end
+
+
+
+-- Toggle Anti Kick
+
+AddToggle(Servidor, {
+
+    Name = "Anti Kick",
+
+    Default = false,
+
+    Callback = function(state)
+
+        antiKickEnabled = state
+
+    end
+
+})
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
