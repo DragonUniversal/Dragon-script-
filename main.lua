@@ -42,7 +42,7 @@ MinimizeButton({
 
     Image = "rbxassetid://137903795082783",
 
-    Size = {40, 40},
+    Size = {50, 50},
 
     Color = Color3.fromRGB(10, 10, 10),
 
@@ -1352,11 +1352,13 @@ AddButton(Player, {
 
 
 
+local section = AddSection(Player, {"Teleport"})
+
+
+
 -- Variável para guardar a posição salva
 
 local savedCFrame = nil
-
-
 
 -- Botão: Salvar posição
 
@@ -1415,6 +1417,37 @@ AddButton(Player, {
     end
 
 })
+
+
+
+
+
+AddButton(Teleport, {
+
+    Name = "Copy Position",
+
+    Callback = function()
+
+        local player = game.Players.LocalPlayer
+
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+
+        if hrp then
+
+            local pos = hrp.Position
+
+            local code = string.format("game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(%.2f, %.2f, %.2f))", pos.X, pos.Y, pos.Z)
+
+            setclipboard(code)
+
+            print("Código copiado:", code)
+
+        end
+
+    end
+
+})
+
 
 
 
