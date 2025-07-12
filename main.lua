@@ -1419,10 +1419,8 @@ AddButton(Player, {
 })
 
 
-
-
-
-AddButton(Teleport, {
+-- Botão: Copy
+AddButton(Player, {
 
     Name = "Copy Position",
 
@@ -1447,8 +1445,6 @@ AddButton(Teleport, {
     end
 
 })
-
-
 
 
 -- Botão Rejoin
