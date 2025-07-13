@@ -241,247 +241,134 @@ local Toggle = AddToggle(Main, {
 })
 
 
-
-
-
-local Players = game:GetService("Players")
-
+local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer
 
-
-
 local velocidadeAtivada = false
-
-local velocidadeValor = 25 -- valor inicial
-
-
-
--- Slider de Velocidade
-
-AddSlider(Main, {
-
-    Name = "Speed",
-
-    MinValue = 16,
-
-    MaxValue = 250,
-
-    Default = 25,
-
-    Increase = 1,
-
-    Callback = function(Value)
-
-        velocidadeValor = Value
-
-        if velocidadeAtivada then
-
-            local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-            if humanoid then
-
-                humanoid.WalkSpeed = velocidadeValor
-
-            end
-
-        end
-
-    end
-
-})
-
-
-
-
-
--- Toggle para ativar/desativar a velocidade
-
-AddToggle(Main, {
-
-    Name = "Speed",
-
-    Default = false,
-
-    Callback = function(Value)
-
-        velocidadeAtivada = Value
-
-        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-        if humanoid then
-
-            humanoid.WalkSpeed = Value and velocidadeValor or 16
-
-        end
-
-    end
-
-})
-
-
-
-
+local velocidadeValor = 25
 
 local jumpAtivado = false
-
-local jumpPowerSelecionado = 25
-
-local jumpPowerPadrao = 50  -- Valor padrão do JumpPower do Roblox
-
-
-
--- Função para aplicar ou restaurar altura do pulo
-
-local function aplicarJumpPower()
-
-    local player = game.Players.LocalPlayer
-
-    local character = player.Character or player.CharacterAdded:Wait()
-
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-    if humanoid then
-
-        humanoid.UseJumpPower = true
-
-        if jumpAtivado then
-
-            humanoid.JumpPower = jumpPowerSelecionado
-
-        else
-
-            humanoid.JumpPower = jumpPowerPadrao
-
-        end
-
-    end
-
-end
-
-
-
--- Slider de Altura do Pulo
-
-AddSlider(Main, {
-
-    Name = "Super Jump",
-
-    MinValue = 10,
-
-    MaxValue = 900,
-
-    Default = 40,
-
-    Increase = 1,
-
-    Callback = function(Value)
-
-        jumpPowerSelecionado = Value
-
-        if jumpAtivado then
-
-            aplicarJumpPower()
-
-        end
-
-    end
-
-})
-
-
-
-
-
--- Toggle para ativar/desativar altura do pulo
-
-AddToggle(Main, {
-
-    Name = "Super Jump",
-
-    Default = false,
-
-    Callback = function(Value)
-
-        jumpAtivado = Value
-
-        aplicarJumpPower()
-
-    end
-
-})
-
-
-
-
+local jumpPowerSelecionado = 40
+local jumpPowerPadrao = 50
 
 local gravidadeAtivada = false
-
-local gravidadeSelecionada = 196.2 -- valor padrão
-
+local gravidadeSelecionada = 196.2
 local gravidadePadrao = 196.2
 
+-- Aplica valores no personagem atual
+local function aplicarValores()
+	local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local humanoid = character:WaitForChild("Humanoid")
 
+	if velocidadeAtivada then
+		humanoid.WalkSpeed = velocidadeValor
+	else
+		humanoid.WalkSpeed = 16
+	end
 
--- Slider para ajustar a gravidade
+	if jumpAtivado then
+		humanoid.UseJumpPower = true
+		humanoid.JumpPower = jumpPowerSelecionado
+	else
+		humanoid.UseJumpPower = true
+		humanoid.JumpPower = jumpPowerPadrao
+	end
 
+	if gravidadeAtivada then
+		workspace.Gravity = gravidadeSelecionada
+	else
+		workspace.Gravity = gravidadePadrao
+	end
+end
+
+-- Garante reaplicação dos valores após respawn
+LocalPlayer.CharacterAdded:Connect(function()
+	task.wait(1) -- tempo curto para carregar tudo
+	aplicarValores()
+end)
+
+-- Slider de Velocidade
 AddSlider(Main, {
-
-    Name = "Gravity",
-
-    MinValue = 0,
-
-    MaxValue = 500,
-
-    Default = 196.2,
-
-    Increase = 1,
-
-    Callback = function(Value)
-
-        gravidadeSelecionada = Value
-
-        if gravidadeAtivada then
-
-            workspace.Gravity = gravidadeSelecionada
-
-        end
-
-    end
-
+	Name = "Speed",
+	MinValue = 16,
+	MaxValue = 250,
+	Default = 25,
+	Increase = 1,
+	Callback = function(Value)
+		velocidadeValor = Value
+		if velocidadeAtivada then
+			local char = LocalPlayer.Character
+			local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				humanoid.WalkSpeed = velocidadeValor
+			end
+		end
+	end
 })
 
-
-
--- Toggle para ativar/desativar o controle de gravidade
-
+-- Toggle Velocidade
 AddToggle(Main, {
-
-    Name = "Gravity",
-
-    Default = false,
-
-    Callback = function(Value)
-
-        gravidadeAtivada = Value
-
-        if gravidadeAtivada then
-
-            workspace.Gravity = gravidadeSelecionada
-
-        else
-
-            workspace.Gravity = gravidadePadrao
-
-        end
-
-    end
-
+	Name = "Speed",
+	Default = false,
+	Callback = function(Value)
+		velocidadeAtivada = Value
+		local char = LocalPlayer.Character
+		local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			humanoid.WalkSpeed = Value and velocidadeValor or 16
+		end
+	end
 })
 
+-- Slider Super Jump
+AddSlider(Main, {
+	Name = "Super Jump",
+	MinValue = 10,
+	MaxValue = 900,
+	Default = 40,
+	Increase = 1,
+	Callback = function(Value)
+		jumpPowerSelecionado = Value
+		if jumpAtivado then
+			aplicarValores()
+		end
+	end
+})
+
+-- Toggle Super Jump
+AddToggle(Main, {
+	Name = "Super Jump",
+	Default = false,
+	Callback = function(Value)
+		jumpAtivado = Value
+		aplicarValores()
+	end
+})
+
+-- Slider Gravidade
+AddSlider(Main, {
+	Name = "Gravity",
+	MinValue = 0,
+	MaxValue = 500,
+	Default = 196.2,
+	Increase = 1,
+	Callback = function(Value)
+		gravidadeSelecionada = Value
+		if gravidadeAtivada then
+			workspace.Gravity = gravidadeSelecionada
+		end
+	end
+})
+
+-- Toggle Gravidade
+AddToggle(Main, {
+	Name = "Gravity",
+	Default = false,
+	Callback = function(Value)
+		gravidadeAtivada = Value
+		workspace.Gravity = Value and gravidadeSelecionada or gravidadePadrao
+	end
+})
 
 
 -- Variáveis de controle
