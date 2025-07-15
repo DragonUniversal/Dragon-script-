@@ -18,7 +18,7 @@ MakeWindow({
 
    Key = {
 
-        KeySystem = false,
+        KeySystem = true,
 
         Title = "Sistema de Chave",
 
@@ -500,326 +500,11 @@ AddToggle(Main, {
 
 
 
-local Players = game:GetService("Players") 
-
-local LocalPlayer = Players.LocalPlayer
-
-local RunService = game:GetService("RunService")
-
-
-
-local playerName = ""
-
-local jogadorSelecionado = nil
-
-local observando = false
-
-local observarConnection = nil
-
-local dropdownRef = nil
-
-
-
--- Função para encontrar jogador pelo nome digitado (busca parcial)
-
-local function encontrarJogador(nome)
-
-	local lowerName = nome:lower()
-
-	for _, player in pairs(Players:GetPlayers()) do
-
-		if player.Name:lower():sub(1, #lowerName) == lowerName then
-
-			return player
-
-		end
-
-	end
-
-	return nil
-
-end
-
-
-
--- Caixa de texto para digitar nome do jogador
-
-AddTextBox(Player, {
-
-	Name = "Enter player name",
-
-	Default = "",
-
-	Placeholder = "Nome do jogador aqui...",
-
-	Callback = function(text)
-
-		playerName = text
-
-		jogadorSelecionado = encontrarJogador(playerName)
-
-	end
-
-})
-
-
-
--- Parar observação
-
-local function pararObservar()
-
-	if observarConnection then
-
-		observarConnection:Disconnect()
-
-		observarConnection = nil
-
-	end
-
-	observando = false
-
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-
-		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
-
-	end
-
-	print("Observação desativada.")
-
-end
-
-
-
--- Iniciar observação
-
-local function iniciarObservar(jogador)
-
-	if not jogador or jogador == LocalPlayer then
-
-		warn("Jogador inválido para observar.")
-
-		return
-
-	end
-
-
-
-	observando = true
-
-
-
-	if not jogador.Character or not jogador.Character:FindFirstChild("Humanoid") then
-
-		warn("Personagem do jogador não está disponível.")
-
-		return
-
-	end
-
-
-
-	workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
-
-	print("Observando " .. jogador.Name)
-
-
-
-	observarConnection = jogador.CharacterAdded:Connect(function()
-
-		wait(1)
-
-		if observando then
-
-			if jogador.Character and jogador.Character:FindFirstChild("Humanoid") then
-
-				workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
-
-				print("Continuando observação após respawn.")
-
-			end
-
-		end
-
-	end)
-
-end
-
-
-
--- Toggle para observar
-
-AddToggle(Player, {
-
-	Name = "Observe",
-
-	Default = false,
-
-	Callback = function(Value)
-
-		jogadorSelecionado = encontrarJogador(playerName)
-
-		if Value then
-
-			if jogadorSelecionado then
-
-				iniciarObservar(jogadorSelecionado)
-
-			else
-
-				warn("Jogador não encontrado para observar.")
-
-			end
-
-		else
-
-			pararObservar()
-
-		end
-
-	end
-
-})
-
-
-
--- Botão de teleporte
-
-AddButton(Player, {
-
-	Name = "Teleport",
-
-	Callback = function()
-
-		local jogador = encontrarJogador(playerName)
-
-		if jogador and jogador.Character and jogador.Character:FindFirstChild("HumanoidRootPart") then
-
-			local localChar = LocalPlayer.Character
-
-			if localChar and localChar:FindFirstChild("HumanoidRootPart") then
-
-				localChar.HumanoidRootPart.CFrame = jogador.Character.HumanoidRootPart.CFrame * CFrame.new(3, 0, 3)
-
-				print("Teletransportado para " .. jogador.Name)
-
-			else
-
-				warn("Seu personagem não está disponível.")
-
-			end
-
-		else
-
-			warn("Jogador inválido ou personagem não carregado.")
-
-		end
-
-	end
-
-})
-
-
-
-local section = AddSection(Player, {"Teleport"})
-
-
-
--- Variável para guardar a posição salva
-
-local savedCFrame = nil
-
-
-
--- Botão: Salvar posição
-
-AddButton(Player, {
-
-    Name = "Save position",
-
-    Callback = function()
-
-        print("Botão foi clicado! Salvando posição...")
-
-        pcall(function()
-
-            local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-
-            savedCFrame = hrp.CFrame
-
-            print("Posição salva:", tostring(savedCFrame))
-
-        end)
-
-    end
-
-})
-
-
-
--- Botão: Teleportar para posição salva
-
-AddButton(Player, {
-
-    Name = "Teleport to position",
-
-    Callback = function()
-
-        print("Botão foi clicado! Teleportando...")
-
-        pcall(function()
-
-            if savedCFrame then
-
-                local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-
-                hrp.CFrame = savedCFrame
-
-                print("Teleportado com sucesso.")
-
-            else
-
-                warn("Nenhuma posição salva ainda!")
-
-            end
-
-        end)
-
-    end
-
-})
-
-
-
--- Botão: Copy
-
-AddButton(Player, {
-
-    Name = "Copy Position",
-
-    Callback = function()
-
-        local player = game.Players.LocalPlayer
-
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-
-        if hrp then
-
-            local pos = hrp.Position
-
-            local code = string.format("game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(%.2f, %.2f, %.2f))", pos.X, pos.Y, pos.Z)
-
-            setclipboard(code)
-
-            print("Código copiado:", code)
-
-        end
-
-    end
-
-})
-
-
 -- Variáveis de controle
+
+
+
+
 
 
 
@@ -1465,6 +1150,330 @@ AddToggle(Visuais, {
 
 
 
+
+
+local Players = game:GetService("Players") 
+
+local LocalPlayer = Players.LocalPlayer
+
+local RunService = game:GetService("RunService")
+
+
+
+local playerName = ""
+
+local jogadorSelecionado = nil
+
+local observando = false
+
+local observarConnection = nil
+
+local dropdownRef = nil
+
+
+
+-- Função para encontrar jogador pelo nome digitado (busca parcial)
+
+local function encontrarJogador(nome)
+
+	local lowerName = nome:lower()
+
+	for _, player in pairs(Players:GetPlayers()) do
+
+		if player.Name:lower():sub(1, #lowerName) == lowerName then
+
+			return player
+
+		end
+
+	end
+
+	return nil
+
+end
+
+
+
+-- Caixa de texto para digitar nome do jogador
+
+AddTextBox(Player, {
+
+	Name = "Enter player name",
+
+	Default = "",
+
+	Placeholder = "Nome do jogador aqui...",
+
+	Callback = function(text)
+
+		playerName = text
+
+		jogadorSelecionado = encontrarJogador(playerName)
+
+	end
+
+})
+
+
+
+-- Parar observação
+
+local function pararObservar()
+
+	if observarConnection then
+
+		observarConnection:Disconnect()
+
+		observarConnection = nil
+
+	end
+
+	observando = false
+
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+
+		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+
+	end
+
+	print("Observação desativada.")
+
+end
+
+
+
+-- Iniciar observação
+
+local function iniciarObservar(jogador)
+
+	if not jogador or jogador == LocalPlayer then
+
+		warn("Jogador inválido para observar.")
+
+		return
+
+	end
+
+
+
+	observando = true
+
+
+
+	if not jogador.Character or not jogador.Character:FindFirstChild("Humanoid") then
+
+		warn("Personagem do jogador não está disponível.")
+
+		return
+
+	end
+
+
+
+	workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
+
+	print("Observando " .. jogador.Name)
+
+
+
+	observarConnection = jogador.CharacterAdded:Connect(function()
+
+		wait(1)
+
+		if observando then
+
+			if jogador.Character and jogador.Character:FindFirstChild("Humanoid") then
+
+				workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
+
+				print("Continuando observação após respawn.")
+
+			end
+
+		end
+
+	end)
+
+end
+
+
+
+-- Toggle para observar
+
+AddToggle(Player, {
+
+	Name = "Observe",
+
+	Default = false,
+
+	Callback = function(Value)
+
+		jogadorSelecionado = encontrarJogador(playerName)
+
+		if Value then
+
+			if jogadorSelecionado then
+
+				iniciarObservar(jogadorSelecionado)
+
+			else
+
+				warn("Jogador não encontrado para observar.")
+
+			end
+
+		else
+
+			pararObservar()
+
+		end
+
+	end
+
+})
+
+
+
+-- Botão de teleporte
+
+AddButton(Player, {
+
+	Name = "Teleport",
+
+	Callback = function()
+
+		local jogador = encontrarJogador(playerName)
+
+		if jogador and jogador.Character and jogador.Character:FindFirstChild("HumanoidRootPart") then
+
+			local localChar = LocalPlayer.Character
+
+			if localChar and localChar:FindFirstChild("HumanoidRootPart") then
+
+				localChar.HumanoidRootPart.CFrame = jogador.Character.HumanoidRootPart.CFrame * CFrame.new(3, 0, 3)
+
+				print("Teletransportado para " .. jogador.Name)
+
+			else
+
+				warn("Seu personagem não está disponível.")
+
+			end
+
+		else
+
+			warn("Jogador inválido ou personagem não carregado.")
+
+		end
+
+	end
+
+})
+
+
+
+local section = AddSection(Player, {"Teleport"})
+
+
+
+-- Variável para guardar a posição salva
+
+local savedCFrame = nil
+
+
+
+-- Botão: Salvar posição
+
+AddButton(Player, {
+
+    Name = "Save position",
+
+    Callback = function()
+
+        print("Botão foi clicado! Salvando posição...")
+
+        pcall(function()
+
+            local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+
+            savedCFrame = hrp.CFrame
+
+            print("Posição salva:", tostring(savedCFrame))
+
+        end)
+
+    end
+
+})
+
+
+
+-- Botão: Teleportar para posição salva
+
+AddButton(Player, {
+
+    Name = "Teleport to position",
+
+    Callback = function()
+
+        print("Botão foi clicado! Teleportando...")
+
+        pcall(function()
+
+            if savedCFrame then
+
+                local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+
+                hrp.CFrame = savedCFrame
+
+                print("Teleportado com sucesso.")
+
+            else
+
+                warn("Nenhuma posição salva ainda!")
+
+            end
+
+        end)
+
+    end
+
+})
+
+
+
+-- Botão: Copy
+
+AddButton(Player, {
+
+    Name = "Copy Position",
+
+    Callback = function()
+
+        local player = game.Players.LocalPlayer
+
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+
+        if hrp then
+
+            local pos = hrp.Position
+
+            local code = string.format("game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(%.2f, %.2f, %.2f))", pos.X, pos.Y, pos.Z)
+
+            setclipboard(code)
+
+            print("Código copiado:", code)
+
+        end
+
+    end
+
+})
+
+
+
+
+
 -- Botão Rejoin
 
 AddButton(Servidor, {
@@ -1921,6 +1930,10 @@ AddButton(Config, {
 
 })
 
+
+
+
+
 AddToggle(Config, {
 
     Name = "FPS",
@@ -2078,9 +2091,6 @@ AddToggle(Config, {
     end
 
 })
-
-
-
 
 
 local Lighting = game:GetService("Lighting")  
@@ -2324,4 +2334,6 @@ AddToggle(Config, {
     end
 
 })
+
+
 
