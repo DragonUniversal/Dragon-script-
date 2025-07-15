@@ -1,12 +1,21 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Menu-/refs/heads/main/Library.lua"))()
 
+
+
 -- Cria a janela principal
+
 MakeWindow({
+
     Hub = {
-        Title = "Dragon Menu I Universal - v5.2",
-        Animation = "by : Vitor Developer"
+
+        Title = "Dragon Menu I Universal - v5.3",
+
+        Animation = "by : Vito0296poq"
+
     },
+
     
+
    Key = {
 
         KeySystem = false,
@@ -33,7 +42,8 @@ MakeWindow({
 
     }
 
-})
+}),
+
 
 
 -- Botão de minimizar
@@ -42,7 +52,7 @@ MinimizeButton({
 
     Image = "rbxassetid://137903795082783",
 
-    Size = {50, 50},
+    Size = {40, 40},
 
     Color = Color3.fromRGB(10, 10, 10),
 
@@ -58,6 +68,8 @@ MinimizeButton({
 
 -- Criação da aba principal
 
+
+
 local Main = MakeTab({Name = "Main"})
 
 local Player = MakeTab({Name = "Player"})
@@ -68,7 +80,7 @@ local Servidor = MakeTab({Name = "Server"})
 
 local Config = MakeTab({Name = "Settings"})
 
-local Look = MakeTab({Name = "Look"})
+
 
 
 
@@ -81,6 +93,8 @@ MakeNotifi({
   Time = 5
 
 })
+
+
 
 
 
@@ -241,249 +255,795 @@ local Toggle = AddToggle(Main, {
 })
 
 
-local Players = game:GetService("Players") 
+
+
+
+local Players = game:GetService("Players")
+
 local LocalPlayer = Players.LocalPlayer
 
+
+
 local velocidadeAtivada = false
-local velocidadeValor = 25
 
-local jumpAtivado = false
-local jumpPowerSelecionado = 40
-local jumpPowerPadrao = 50
+local velocidadeValor = 25 -- valor inicial
 
-local gravidadeAtivada = false
-local gravidadeSelecionada = 196.2
-local gravidadePadrao = 196.2
 
--- Aplica valores no personagem atual
-local function aplicarValores()
-	local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	local humanoid = character:WaitForChild("Humanoid")
-
-	if velocidadeAtivada then
-		humanoid.WalkSpeed = velocidadeValor
-	else
-		humanoid.WalkSpeed = 16
-	end
-
-	if jumpAtivado then
-		humanoid.UseJumpPower = true
-		humanoid.JumpPower = jumpPowerSelecionado
-	else
-		humanoid.UseJumpPower = true
-		humanoid.JumpPower = jumpPowerPadrao
-	end
-
-	if gravidadeAtivada then
-		workspace.Gravity = gravidadeSelecionada
-	else
-		workspace.Gravity = gravidadePadrao
-	end
-end
-
--- Garante reaplicação dos valores após respawn
-LocalPlayer.CharacterAdded:Connect(function()
-	task.wait(1) -- tempo curto para carregar tudo
-	aplicarValores()
-end)
 
 -- Slider de Velocidade
+
 AddSlider(Main, {
-	Name = "Speed",
-	MinValue = 16,
-	MaxValue = 250,
-	Default = 25,
-	Increase = 1,
-	Callback = function(Value)
-		velocidadeValor = Value
-		if velocidadeAtivada then
-			local char = LocalPlayer.Character
-			local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-			if humanoid then
-				humanoid.WalkSpeed = velocidadeValor
+
+    Name = "Speed",
+
+    MinValue = 16,
+
+    MaxValue = 250,
+
+    Default = 25,
+
+    Increase = 1,
+
+    Callback = function(Value)
+
+        velocidadeValor = Value
+
+        if velocidadeAtivada then
+
+            local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+            if humanoid then
+
+                humanoid.WalkSpeed = velocidadeValor
+
+            end
+
+        end
+
+    end
+
+})
+
+
+
+
+
+-- Toggle para ativar/desativar a velocidade
+
+AddToggle(Main, {
+
+    Name = "Speed",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        velocidadeAtivada = Value
+
+        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+
+            humanoid.WalkSpeed = Value and velocidadeValor or 16
+
+        end
+
+    end
+
+})
+
+
+
+
+
+local jumpAtivado = false
+
+local jumpPowerSelecionado = 25
+
+local jumpPowerPadrao = 50  -- Valor padrão do JumpPower do Roblox
+
+
+
+-- Função para aplicar ou restaurar altura do pulo
+
+local function aplicarJumpPower()
+
+    local player = game.Players.LocalPlayer
+
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if humanoid then
+
+        humanoid.UseJumpPower = true
+
+        if jumpAtivado then
+
+            humanoid.JumpPower = jumpPowerSelecionado
+
+        else
+
+            humanoid.JumpPower = jumpPowerPadrao
+
+        end
+
+    end
+
+end
+
+
+
+-- Slider de Altura do Pulo
+
+AddSlider(Main, {
+
+    Name = "Super Jump",
+
+    MinValue = 10,
+
+    MaxValue = 900,
+
+    Default = 40,
+
+    Increase = 1,
+
+    Callback = function(Value)
+
+        jumpPowerSelecionado = Value
+
+        if jumpAtivado then
+
+            aplicarJumpPower()
+
+        end
+
+    end
+
+})
+
+
+
+
+
+-- Toggle para ativar/desativar altura do pulo
+
+AddToggle(Main, {
+
+    Name = "Super Jump",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        jumpAtivado = Value
+
+        aplicarJumpPower()
+
+    end
+
+})
+
+
+
+
+
+local gravidadeAtivada = false
+
+local gravidadeSelecionada = 196.2 -- valor padrão
+
+local gravidadePadrao = 196.2
+
+
+
+-- Slider para ajustar a gravidade
+
+AddSlider(Main, {
+
+    Name = "Gravity",
+
+    MinValue = 0,
+
+    MaxValue = 500,
+
+    Default = 196.2,
+
+    Increase = 1,
+
+    Callback = function(Value)
+
+        gravidadeSelecionada = Value
+
+        if gravidadeAtivada then
+
+            workspace.Gravity = gravidadeSelecionada
+
+        end
+
+    end
+
+})
+
+
+
+-- Toggle para ativar/desativar o controle de gravidade
+
+AddToggle(Main, {
+
+    Name = "Gravity",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        gravidadeAtivada = Value
+
+        if gravidadeAtivada then
+
+            workspace.Gravity = gravidadeSelecionada
+
+        else
+
+            workspace.Gravity = gravidadePadrao
+
+        end
+
+    end
+
+})
+
+
+
+
+
+local Players = game:GetService("Players") 
+
+local LocalPlayer = Players.LocalPlayer
+
+local RunService = game:GetService("RunService")
+
+
+
+local playerName = ""
+
+local jogadorSelecionado = nil
+
+local observando = false
+
+local observarConnection = nil
+
+local dropdownRef = nil
+
+
+
+-- Função para encontrar jogador pelo nome digitado (busca parcial)
+
+local function encontrarJogador(nome)
+
+	local lowerName = nome:lower()
+
+	for _, player in pairs(Players:GetPlayers()) do
+
+		if player.Name:lower():sub(1, #lowerName) == lowerName then
+
+			return player
+
+		end
+
+	end
+
+	return nil
+
+end
+
+
+
+-- Caixa de texto para digitar nome do jogador
+
+AddTextBox(Player, {
+
+	Name = "Enter player name",
+
+	Default = "",
+
+	Placeholder = "Nome do jogador aqui...",
+
+	Callback = function(text)
+
+		playerName = text
+
+		jogadorSelecionado = encontrarJogador(playerName)
+
+	end
+
+})
+
+
+
+-- Parar observação
+
+local function pararObservar()
+
+	if observarConnection then
+
+		observarConnection:Disconnect()
+
+		observarConnection = nil
+
+	end
+
+	observando = false
+
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+
+		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+
+	end
+
+	print("Observação desativada.")
+
+end
+
+
+
+-- Iniciar observação
+
+local function iniciarObservar(jogador)
+
+	if not jogador or jogador == LocalPlayer then
+
+		warn("Jogador inválido para observar.")
+
+		return
+
+	end
+
+
+
+	observando = true
+
+
+
+	if not jogador.Character or not jogador.Character:FindFirstChild("Humanoid") then
+
+		warn("Personagem do jogador não está disponível.")
+
+		return
+
+	end
+
+
+
+	workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
+
+	print("Observando " .. jogador.Name)
+
+
+
+	observarConnection = jogador.CharacterAdded:Connect(function()
+
+		wait(1)
+
+		if observando then
+
+			if jogador.Character and jogador.Character:FindFirstChild("Humanoid") then
+
+				workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
+
+				print("Continuando observação após respawn.")
+
 			end
-		end
-	end
-})
 
--- Toggle Velocidade
-AddToggle(Main, {
-	Name = "Speed",
+		end
+
+	end)
+
+end
+
+
+
+-- Toggle para observar
+
+AddToggle(Player, {
+
+	Name = "Observe",
+
 	Default = false,
+
 	Callback = function(Value)
-		velocidadeAtivada = Value
-		local char = LocalPlayer.Character
-		local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-		if humanoid then
-			humanoid.WalkSpeed = Value and velocidadeValor or 16
+
+		jogadorSelecionado = encontrarJogador(playerName)
+
+		if Value then
+
+			if jogadorSelecionado then
+
+				iniciarObservar(jogadorSelecionado)
+
+			else
+
+				warn("Jogador não encontrado para observar.")
+
+			end
+
+		else
+
+			pararObservar()
+
 		end
+
 	end
+
 })
 
--- Slider Super Jump
-AddSlider(Main, {
-	Name = "Super Jump",
-	MinValue = 10,
-	MaxValue = 900,
-	Default = 40,
-	Increase = 1,
-	Callback = function(Value)
-		jumpPowerSelecionado = Value
-		if jumpAtivado then
-			aplicarValores()
+
+
+-- Botão de teleporte
+
+AddButton(Player, {
+
+	Name = "Teleport",
+
+	Callback = function()
+
+		local jogador = encontrarJogador(playerName)
+
+		if jogador and jogador.Character and jogador.Character:FindFirstChild("HumanoidRootPart") then
+
+			local localChar = LocalPlayer.Character
+
+			if localChar and localChar:FindFirstChild("HumanoidRootPart") then
+
+				localChar.HumanoidRootPart.CFrame = jogador.Character.HumanoidRootPart.CFrame * CFrame.new(3, 0, 3)
+
+				print("Teletransportado para " .. jogador.Name)
+
+			else
+
+				warn("Seu personagem não está disponível.")
+
+			end
+
+		else
+
+			warn("Jogador inválido ou personagem não carregado.")
+
 		end
+
 	end
+
 })
 
--- Toggle Super Jump
-AddToggle(Main, {
-	Name = "Super Jump",
-	Default = false,
-	Callback = function(Value)
-		jumpAtivado = Value
-		aplicarValores()
-	end
+
+
+local section = AddSection(Player, {"Teleport"})
+
+
+
+-- Variável para guardar a posição salva
+
+local savedCFrame = nil
+
+
+
+-- Botão: Salvar posição
+
+AddButton(Player, {
+
+    Name = "Save position",
+
+    Callback = function()
+
+        print("Botão foi clicado! Salvando posição...")
+
+        pcall(function()
+
+            local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+
+            savedCFrame = hrp.CFrame
+
+            print("Posição salva:", tostring(savedCFrame))
+
+        end)
+
+    end
+
 })
 
--- Slider Gravidade
-AddSlider(Main, {
-	Name = "Gravity",
-	MinValue = 0,
-	MaxValue = 500,
-	Default = 196.2,
-	Increase = 1,
-	Callback = function(Value)
-		gravidadeSelecionada = Value
-		if gravidadeAtivada then
-			workspace.Gravity = gravidadeSelecionada
-		end
-	end
+
+
+-- Botão: Teleportar para posição salva
+
+AddButton(Player, {
+
+    Name = "Teleport to position",
+
+    Callback = function()
+
+        print("Botão foi clicado! Teleportando...")
+
+        pcall(function()
+
+            if savedCFrame then
+
+                local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+
+                hrp.CFrame = savedCFrame
+
+                print("Teleportado com sucesso.")
+
+            else
+
+                warn("Nenhuma posição salva ainda!")
+
+            end
+
+        end)
+
+    end
+
 })
 
--- Toggle Gravidade
-AddToggle(Main, {
-	Name = "Gravity",
-	Default = false,
-	Callback = function(Value)
-		gravidadeAtivada = Value
-		workspace.Gravity = Value and gravidadeSelecionada or gravidadePadrao
-	end
+
+
+-- Botão: Copy
+
+AddButton(Player, {
+
+    Name = "Copy Position",
+
+    Callback = function()
+
+        local player = game.Players.LocalPlayer
+
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+
+        if hrp then
+
+            local pos = hrp.Position
+
+            local code = string.format("game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(%.2f, %.2f, %.2f))", pos.X, pos.Y, pos.Z)
+
+            setclipboard(code)
+
+            print("Código copiado:", code)
+
+        end
+
+    end
+
 })
 
 
 -- Variáveis de controle
+
+
+
 local espAtivado = false
+
 local connections = {}
 
 local Players = game:GetService("Players")
+
 local LocalPlayer = Players.LocalPlayer
 
+
+
 -- Função para criar ESP
+
 local function criarESP(player)
+
     if player == LocalPlayer then return end
 
     task.spawn(function()
+
         while espAtivado do
+
             local char = player.Character
-            local root = char and char:FindFirstChild("HumanoidRootPart")
+
+            local head = char and char:FindFirstChild("Head")
+
             local humanoid = char and char:FindFirstChild("Humanoid")
 
-            if char and root and humanoid and humanoid.Health > 0 then
-                local esp = root:FindFirstChild("ESP")
+
+
+            if char and head and humanoid and humanoid.Health > 0 then
+
+                local esp = head:FindFirstChild("ESP")
+
                 if not esp then
+
                     esp = Instance.new("BillboardGui")
+
                     esp.Name = "ESP"
-                    esp.Adornee = root
-                    esp.Size = UDim2.new(0, 70, 0, 18)
-                    esp.StudsOffset = Vector3.new(0, -3, 0)
+
+                    esp.Adornee = head
+
+                    esp.Size = UDim2.new(0, 70, 0, 18) -- menor tamanho
+
+                    esp.StudsOffset = Vector3.new(0, 1.3, 0)
+
                     esp.AlwaysOnTop = true
 
+
+
                     local text = Instance.new("TextLabel")
+
                     text.Name = "Texto"
+
                     text.Size = UDim2.new(1, 0, 1, 0)
+
                     text.BackgroundTransparency = 1
+
                     text.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    text.TextSize = 10
+
+                    text.TextSize = 10 -- menor texto
+
                     text.TextScaled = false
+
                     text.Font = Enum.Font.Gotham
+
                     text.TextStrokeTransparency = 0.4
+
                     text.TextStrokeColor3 = Color3.new(0, 0, 0)
+
                     text.Parent = esp
 
-                    esp.Parent = root
+
+
+                    esp.Parent = head
+
+
 
                     humanoid.Died:Connect(function()
+
                         if esp then esp:Destroy() end
+
                     end)
+
                 end
+
+
 
                 local texto = esp:FindFirstChild("Texto")
-                if texto and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                    local distancia = (LocalPlayer.Character.HumanoidRootPart.Position - root.Position).Magnitude
+
+                if texto and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
+
+                    local distancia = (LocalPlayer.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
+
                     texto.Text = player.Name .. " - " .. math.floor(distancia) .. "m"
+
                 end
+
             end
+
             wait(0.3)
+
         end
+
     end)
+
 end
+
+
 
 -- Monitorar jogadores
+
 local function monitorarPlayer(player)
+
     if connections[player] then
+
         connections[player]:Disconnect()
+
     end
+
+
 
     connections[player] = player.CharacterAdded:Connect(function()
+
         wait(1)
+
         if espAtivado then
+
             criarESP(player)
+
         end
+
     end)
 
+
+
     criarESP(player)
+
 end
 
+
+
 -- Toggle para ativar/desativar o ESP
+
 AddToggle(Visuais, {
+
     Name = "ESP Name",
+
     Default = false,
+
     Callback = function(Value)
+
         espAtivado = Value
 
+
+
         if espAtivado then
+
             for _, player in ipairs(Players:GetPlayers()) do
+
                 monitorarPlayer(player)
+
             end
+
+
 
             connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
+
                 monitorarPlayer(player)
+
             end)
+
         else
+
             for _, player in ipairs(Players:GetPlayers()) do
+
                 local char = player.Character
+
                 if char then
-                    local root = char:FindFirstChild("HumanoidRootPart")
-                    if root then
-                        local esp = root:FindFirstChild("ESP")
+
+                    local head = char:FindFirstChild("Head")
+
+                    if head then
+
+                        local esp = head:FindFirstChild("ESP")
+
                         if esp then
+
                             esp:Destroy()
+
                         end
+
                     end
+
                 end
+
                 if connections[player] then
+
                     connections[player]:Disconnect()
+
                     connections[player] = nil
+
                 end
+
             end
 
+
+
             if connections["PlayerAdded"] then
+
                 connections["PlayerAdded"]:Disconnect()
+
                 connections["PlayerAdded"] = nil
+
             end
+
         end
+
     end
+
 })
+
+
 
 
 
@@ -619,6 +1179,8 @@ AddToggle(Visuais, {
 
 
 
+
+
 local Players = game:GetService("Players")
 
 local RunService = game:GetService("RunService")
@@ -631,7 +1193,7 @@ local espConnections = {}
 
 local espLinhaAtivado = false
 
-ocal corVermelha = Color3.fromRGB(255, 0, 0)
+local corVermelha = Color3.fromRGB(255, 0, 0)
 
 
 
@@ -813,9 +1375,9 @@ AddToggle(Visuais, {
 
 local fovAtivado = false
 
-local fovValor = 70 -- valor padrão inicial
+local fovValor = 70
 
-local fovPadrao = 70 -- valor para restaurar quando desativar
+local fovPadrao = 70
 
 
 
@@ -843,7 +1405,7 @@ end
 
 
 
--- Atualiza FOV quando o personagem respawnar
+-- Atualiza FOV 
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
 
@@ -901,333 +1463,34 @@ AddToggle(Visuais, {
 
 
 
-local Players = game:GetService("Players") 
-
-local LocalPlayer = Players.LocalPlayer
-
-local RunService = game:GetService("RunService")
-
-
-
-local playerName = ""
-
-local jogadorSelecionado = nil
-
-local observando = false
-
-local observarConnection = nil
-
-local dropdownRef = nil
-
-
-
--- Função para encontrar jogador
-
-local function encontrarJogador(nome)
-
-	local lowerName = nome:lower()
-
-	for _, player in pairs(Players:GetPlayers()) do
-
-		if player.Name:lower():sub(1, #lowerName) == lowerName then
-
-			return player
-
-		end
-
-	end
-
-	return nil
-
-end
-
-
-
--- Caixa de texto para digitar nome do jogador
-
-AddTextBox(Player, {
-
-	Name = "Enter player name",
-
-	Default = "",
-
-	Placeholder = "Nome do jogador aqui...",
-
-	Callback = function(text)
-
-		playerName = text
-
-		jogadorSelecionado = encontrarJogador(playerName)
-
-	end
-
-})
-
-
-
--- Parar observação
-
-local function pararObservar()
-
-	if observarConnection then
-
-		observarConnection:Disconnect()
-
-		observarConnection = nil
-
-	end
-
-	observando = false
-
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-
-		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
-
-	end
-
-	print("Observação desativada.")
-
-end
-
-
-
--- Iniciar observação
-
-local function iniciarObservar(jogador)
-
-	if not jogador or jogador == LocalPlayer then
-
-		warn("Jogador inválido para observar.")
-
-		return
-
-	end
-
-
-
-	observando = true
-
-
-
-	if not jogador.Character or not jogador.Character:FindFirstChild("Humanoid") then
-
-		warn("Personagem do jogador não está disponível.")
-
-		return
-
-	end
-
-
-
-	workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
-
-	print("Observando " .. jogador.Name)
-
-
-
-	observarConnection = jogador.CharacterAdded:Connect(function()
-
-		wait(1)
-
-		if observando then
-
-			if jogador.Character and jogador.Character:FindFirstChild("Humanoid") then
-
-				workspace.CurrentCamera.CameraSubject = jogador.Character.Humanoid
-
-				print("Continuando observação após respawn.")
-
-			end
-
-		end
-
-	end)
-
-end
-
-
-
--- Toggle para observar
-
-AddToggle(Player, {
-
-	Name = "Observe",
-
-	Default = false,
-
-	Callback = function(Value)
-
-		jogadorSelecionado = encontrarJogador(playerName)
-
-		if Value then
-
-			if jogadorSelecionado then
-
-				iniciarObservar(jogadorSelecionado)
-
-			else
-
-				warn("Jogador não encontrado para observar.")
-
-			end
-
-		else
-
-			pararObservar()
-
-		end
-
-	end
-
-})
-
-
-
--- Botão de teleporte único
-
-AddButton(Player, {
-
-	Name = "Teleport",
-
-	Callback = function()
-
-		local jogador = encontrarJogador(playerName)
-
-		if jogador and jogador.Character and jogador.Character:FindFirstChild("HumanoidRootPart") then
-
-			local localChar = LocalPlayer.Character
-
-			if localChar and localChar:FindFirstChild("HumanoidRootPart") then
-
-				localChar.HumanoidRootPart.CFrame = jogador.Character.HumanoidRootPart.CFrame * CFrame.new(3, 0, 3)
-
-				print("Teletransportado para " .. jogador.Name)
-
-			else
-
-				warn("Seu personagem não está disponível.")
-
-			end
-
-		else
-
-			warn("Jogador inválido ou personagem não carregado.")
-
-		end
-
-	end
-
-})
-
-
-
-local section = AddSection(Player, {"Teleport"})
-
-
-
--- Variável para guardar a posição salva
-
-local savedCFrame = nil
-
--- Botão: Salvar posição
-
-AddButton(Player, {
-
-    Name = "Save position",
-
-    Callback = function()
-
-        print("Botão foi clicado! Salvando posição...")
-
-        pcall(function()
-
-            local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-
-            savedCFrame = hrp.CFrame
-
-            print("Posição salva:", tostring(savedCFrame))
-
-        end)
-
-    end
-
-})
-
-
-
--- Botão: Teleportar para posição salva
-
-AddButton(Player, {
-
-    Name = "Teleport to saved position",
-
-    Callback = function()
-
-        print("Botão foi clicado! Teleportando...")
-
-        pcall(function()
-
-            if savedCFrame then
-
-                local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-
-                hrp.CFrame = savedCFrame
-
-                print("Teleportado com sucesso.")
-
-            else
-
-                warn("Nenhuma posição salva ainda!")
-
-            end
-
-        end)
-
-    end
-
-})
-
-
--- Botão: Copy
-AddButton(Player, {
-
-    Name = "Copy Position",
-
-    Callback = function()
-
-        local player = game.Players.LocalPlayer
-
-        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-
-        if hrp then
-
-            local pos = hrp.Position
-
-            local code = string.format("game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(%.2f, %.2f, %.2f))", pos.X, pos.Y, pos.Z)
-
-            setclipboard(code)
-
-            print("Código copiado:", code)
-
-        end
-
-    end
-
-})
 
 
 -- Botão Rejoin
+
 AddButton(Servidor, {
+
 	Name = "Rejoin",
+
 	Callback = function()
+
 		local TeleportService = cloneref(game:GetService("TeleportService"))
+
 		local Players = cloneref(game:GetService("Players"))
+
 		local LocalPlayer = cloneref(Players.LocalPlayer)
 
+
+
 		-- Reentra no mesmo lugar do Servidor
-		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LoalPlayer)
+
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+
 	end
+
 })
+
+
+
 
 
 -- Serviços
@@ -1289,6 +1552,8 @@ AddButton(Servidor, {
     end
 
 })
+
+
 
 
 
@@ -1374,66 +1639,13 @@ AddToggle(Servidor, {
 
 })
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
-local player = Players.LocalPlayer
-local antiVoidAtivo = false
-local conexaoMonitoramento
-
-local posicaoCentro = Vector3.new(0, 20, 0)
-
--- Monitoramento contínuo da posição do jogador
-local function monitorarQueda()
-    if conexaoMonitoramento then
-        conexaoMonitoramento:Disconnect()
-        conexaoMonitoramento = nil
-    end
-
-    conexaoMonitoramento = RunService.Heartbeat:Connect(function()
-        local character = player.Character
-        local hrp = character and character:FindFirstChild("HumanoidRootPart")
-        if hrp and hrp.Position.Y < -50 then
-            hrp.CFrame = CFrame.new(posicaoCentro)
-        end
-    end)
-end
-
-Players.LocalPlayer.CharacterAdded:Connect(function()
-    if antiVoidAtivo then
-        task.wait(1)
-        monitorarQueda()
-    end
-end)
-
--- Toggle Anti Void
-AddToggle(Servidor, {
-    Name = "Anti Void",
-    Description = ".",
-    Default = false,
-    Callback = function(Value)
-        antiVoidAtivo = Value
-
-        if Value then
-            monitorarQueda()
-        else
-            if conexaoMonitoramento then
-                conexaoMonitoramento:Disconnect()
-                conexaoMonitoramento = nil
-            end
-        end
-    end
-})
 
 
 
 local Players = game:GetService("Players")
-
-
 
 local LocalPlayer = Players.LocalPlayer
-
-
 
 local RunService = game:GetService("RunService")
 
@@ -1641,13 +1853,6 @@ AddToggle(Servidor, {
 
 
 
-
-
-
-
-
-
-
 AddButton(Config, {
 
     Name = "FPS Boost",
@@ -1715,7 +1920,6 @@ AddButton(Config, {
     end
 
 })
-
 
 AddToggle(Config, {
 
@@ -1874,6 +2078,8 @@ AddToggle(Config, {
     end
 
 })
+
+
 
 
 
@@ -2119,103 +2325,3 @@ AddToggle(Config, {
 
 })
 
-
--- Serviços 
-
-local Players = game:GetService("Players")
-
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
-
--- Variáveis do Aimbot
-local AimbotEnabled = false
-local AimbotConnection = nil
-local FOVRadius = 100
-local AimbotTargetPart = "Head" -- Padrão
-local ChangeMode = false
-
--- Desenha o círculo de FOV
-local FOVCircle = Drawing.new("Circle")
-FOVCircle.Color = Color3.fromRGB(255, 0, 0)
-FOVCircle.Thickness = 2
-FOVCircle.Filled = false
-FOVCircle.Visible = false
-FOVCircle.Radius = FOVRadius
-
-local FOV_OffsetX = 30
-local FOV_OffsetY = 0
-
--- Atualiza posição do círculo de FOV
-RunService.RenderStepped:Connect(function()
-    local screenSize = Camera.ViewportSize
-    FOVCircle.Position = Vector2.new((screenSize.X / 2) + FOV_OffsetX, (screenSize.Y / 2) + FOV_OffsetY)
-end)
-
--- Alterna automaticamente entre Head e Neck
-local function toggleTargetPart()
-    AimbotTargetPart = (AimbotTargetPart == "Head") and "Neck" or "Head"
-end
-
--- Encontra jogador mais próximo dentro do FOV
-local function getClosestPlayerToFOV()
-    local closestPlayer = nil
-    local shortestDistance = math.huge
-
-    for _, otherPlayer in ipairs(Players:GetPlayers()) do
-        if otherPlayer ~= LocalPlayer and otherPlayer.Character then
-            local part = otherPlayer.Character:FindFirstChild(AimbotTargetPart)
-            if part then
-                local pos, onScreen = Camera:WorldToViewportPoint(part.Position)
-                if onScreen then
-                    local dist = (Vector2.new(pos.X, pos.Y) - FOVCircle.Position).Magnitude
-                    if dist < FOVCircle.Radius and dist < shortestDistance then
-                        shortestDistance = dist
-                        closestPlayer = otherPlayer
-                    end
-                end
-            end
-        end
-    end
-
-    return closestPlayer
-end
-
--- Toggle do Aimbot
-AddToggle(Look, {
-    Name = "Aimbot",
-    Default = false,
-    Callback = function(Value)
-        AimbotEnabled = Value
-        FOVCircle.Visible = Value
-
-        if Value and not AimbotConnection then
-            AimbotConnection = RunService.RenderStepped:Connect(function()
-                if ChangeMode then toggleTargetPart() end
-                local target = getClosestPlayerToFOV()
-                if target and target.Character then
-                    local part = target.Character:FindFirstChild(AimbotTargetPart)
-                    if part then
-                        Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
-                    end
-                end
-            end)
-        elseif not Value and AimbotConnection then
-            AimbotConnection:Disconnect()
-            AimbotConnection = nil
-        end
-    end
-})
-
--- Slider para controlar o tamanho do FOV
-AddSlider(Look, {
-    Name = "FOV",
-    MinValue = 16,
-    MaxValue = 250,
-    Default = FOVRadius,
-    Increase = 1,
-    Callback = function(Value)
-        FOVRadius = Value
-        FOVCircle.Radius = FOVRadius
-    end
-})
