@@ -8,9 +8,9 @@ MakeWindow({
 
     Hub = {
 
-        Title = "Dragon Menu I Universal - v5.3",
+        Title = "Dragon Menu I Universal - v5.2",
 
-        Animation = "by : Vito0296poq"
+        Animation = "by : Vitor Developer"
 
     },
 
@@ -504,10 +504,6 @@ AddToggle(Main, {
 
 
 
-
-
-
-
 local espAtivado = false
 
 local connections = {}
@@ -732,7 +728,7 @@ AddToggle(Visuais, {
 
 
 
--- Variável
+-- Variável global para controlar o estado do ESP
 
 local espAtivado = false
 
@@ -1060,9 +1056,9 @@ AddToggle(Visuais, {
 
 local fovAtivado = false
 
-local fovValor = 70
+local fovValor = 70 -- valor padrão inicial
 
-local fovPadrao = 70
+local fovPadrao = 70 -- valor para restaurar quando desativar
 
 
 
@@ -1090,7 +1086,7 @@ end
 
 
 
--- Atualiza FOV 
+-- Atualiza FOV quando o personagem respawnar
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
 
@@ -1405,7 +1401,6 @@ AddButton(Player, {
     end
 
 })
-
 
 
 -- Botão: Teleportar para posição salva
@@ -2091,6 +2086,9 @@ AddToggle(Config, {
     end
 
 })
+
+
+
 
 
 local Lighting = game:GetService("Lighting")  
