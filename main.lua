@@ -487,7 +487,7 @@ AddToggle(Visuais, {
 
 
 
--- Variável global para controlar o estado do ESP
+-- Variável
 
 local espAtivado = false
 
@@ -513,7 +513,7 @@ local function aplicarHighlight(player)
 
     if character and not character:FindFirstChild("ESPHighlight") then
 
-        local highlight = Instance.new("Highligh")
+        local highlight = Instance.new("Highlight")
 
         highlight.Name = "ESPHighlight"
 
@@ -619,8 +619,6 @@ AddToggle(Visuais, {
 
 
 
-
-
 local Players = game:GetService("Players")
 
 local RunService = game:GetService("RunService")
@@ -633,7 +631,7 @@ local espConnections = {}
 
 local espLinhaAtivado = false
 
-local corVermelha = Color3.fromRGB(255, 0, 0)
+ocal corVermelha = Color3.fromRGB(255, 0, 0)
 
 
 
